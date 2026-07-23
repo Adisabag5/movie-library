@@ -15,6 +15,25 @@ export interface Movie {
   vote_count: number;
 }
 
+// TV results use different field names than movies (name/first_air_date
+// instead of title/release_date), so they get their own interface.
+export interface Series {
+  adult: boolean;
+  backdrop_path: string | null;
+  genre_ids: number[];
+  id: number;
+  origin_country: string[];
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string | null;
+  first_air_date: string;
+  name: string;
+  vote_average: number;
+  vote_count: number;
+}
+
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -49,6 +68,13 @@ export async function fetchPopularMovies(): Promise<Movie[]> {
 export async function fetchTopRatedMovies(): Promise<Movie[]> {
   const data = await fetchFromTmdb<{ results: Movie[] }>(
     '/movie/top_rated?language=en-US&page=1'
+  );
+  return data.results;
+}
+
+export async function fetchPopularSeries(): Promise<Series[]> {
+  const data = await fetchFromTmdb<{ results: Series[] }>(
+    '/tv/popular?language=en-US&page=1'
   );
   return data.results;
 }

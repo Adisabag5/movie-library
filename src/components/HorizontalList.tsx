@@ -1,6 +1,11 @@
-import type { Movie } from '../core/http'
+import type { Movie, Series } from '../core/http'
 
-const HorizontalList = ({ title, list }: { title: string; list: Movie[] }) => {
+// Movies have `title`, series have `name` — the `in` check tells
+// TypeScript which of the two we are holding (union narrowing).
+const displayName = (item: Movie | Series) =>
+    'title' in item ? item.title : item.name
+
+const HorizontalList = ({ title, list }: { title: string; list: (Movie | Series)[] }) => {
 
     return (
         <section>
@@ -17,7 +22,7 @@ const HorizontalList = ({ title, list }: { title: string; list: Movie[] }) => {
                     >
                         <img
                             src={'https://image.tmdb.org/t/p/w200' + i.poster_path}
-                            alt={i.title}
+                            alt={displayName(i)}
                             className="h-32 w-20 rounded-lg object-cover"
                         />
                     </button>
