@@ -12,11 +12,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<Home />} />
-      <Route 
-        path="/movies" 
-        element={<Movies />} 
-        // loader={ fetchMovies() }
-        />
+      <Route path="/movies" element={<Movies />} />
       <Route path="/series" element={<Series />} />
       <Route path="/collections" element={<Collections />} /> 
       <Route path="*" element={<PageNotFound />} />
