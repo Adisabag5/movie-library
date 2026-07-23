@@ -9,9 +9,6 @@ import {
   fetchTopRatedMovies,
 } from '../core/http';
 
-// Query keys identify each piece of server data in the cache.
-// The convention is a readonly array from general to specific,
-// e.g. ['movies', 'popular'] — later ['movies', 'details', id].
 export function usePopularMovies() {
   return useQuery({
     queryKey: ['movies', 'popular'],
