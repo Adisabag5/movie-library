@@ -72,6 +72,19 @@ export async function fetchTopRatedMovies(): Promise<Movie[]> {
   return data.results;
 }
 
+// The single-movie endpoint returns richer data than list items:
+// full genre objects instead of ids, plus runtime, tagline, etc.
+export interface MovieDetails extends Omit<Movie, 'genre_ids'> {
+  genres: { id: number; name: string }[];
+  runtime: number;
+  tagline: string;
+  status: string;
+}
+
+export async function fetchMovieDetails(id: string): Promise<MovieDetails> {
+  return fetchFromTmdb<MovieDetails>(`/movie/${id}?language=en-US`);
+}
+
 export async function fetchPopularSeries(): Promise<Series[]> {
   const data = await fetchFromTmdb<{ results: Series[] }>(
     '/tv/popular?language=en-US&page=1'

@@ -1,9 +1,13 @@
+import { Link } from 'react-router-dom'
 import type { Movie, Series } from '../core/http'
 
 // Movies have `title`, series have `name` — the `in` check tells
 // TypeScript which of the two we are holding (union narrowing).
 const displayName = (item: Movie | Series) =>
     'title' in item ? item.title : item.name
+
+const detailsPath = (item: Movie | Series) =>
+    'title' in item ? `/movie/${item.id}` : `/series/${item.id}`
 
 const HorizontalList = ({ title, list }: { title: string; list: (Movie | Series)[] }) => {
 
@@ -15,9 +19,9 @@ const HorizontalList = ({ title, list }: { title: string; list: (Movie | Series)
 
             <div className="list">
                 {list.map((i) => (
-                    <button
+                    <Link
                         key={i.id}
-                        onClick={() => {return;}}
+                        to={detailsPath(i)}
                         className={'shrink-0 rounded-lg transition'}
                     >
                         <img
@@ -25,7 +29,7 @@ const HorizontalList = ({ title, list }: { title: string; list: (Movie | Series)
                             alt={displayName(i)}
                             className="h-32 w-20 rounded-lg object-cover"
                         />
-                    </button>
+                    </Link>
                 ))}
             </div>
         </section>

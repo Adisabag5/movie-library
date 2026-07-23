@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  fetchMovieDetails,
   fetchPopularMovies,
   fetchPopularSeries,
   fetchTopRatedMovies,
@@ -19,6 +20,15 @@ export function useTopRatedMovies() {
   return useQuery({
     queryKey: ['movies', 'topRated'],
     queryFn: fetchTopRatedMovies,
+  });
+}
+
+// The id becomes part of the query key, so every movie gets its own
+// cache entry — visiting the same movie twice is served from cache.
+export function useMovieDetails(id: string) {
+  return useQuery({
+    queryKey: ['movies', 'details', id],
+    queryFn: () => fetchMovieDetails(id),
   });
 }
 
