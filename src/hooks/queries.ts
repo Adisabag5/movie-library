@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
   fetchMovieDetails,
+  fetchMoviesPage,
   fetchPopularMovies,
   fetchPopularSeries,
   fetchSeriesDetails,
@@ -21,6 +22,18 @@ export function useTopRatedMovies() {
   return useQuery({
     queryKey: ['movies', 'topRated'],
     queryFn: fetchTopRatedMovies,
+  });
+}
+
+// The page number is part of the query key — each page is its own cache
+// entry. keepPreviousData shows the previous page's data (flagged as
+// isPlaceholderData) while the next page loads, so the grid never
+// collapses back into skeletons between pages.
+export function useMoviesPage(page: number) {
+  return useQuery({
+    queryKey: ['movies', 'list', page],
+    queryFn: () => fetchMoviesPage(page),
+    placeholderData: keepPreviousData,
   });
 }
 

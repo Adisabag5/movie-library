@@ -1,3 +1,4 @@
+import type { Paginated } from '../types/api';
 import type { Movie, MovieDetails } from '../types/movie';
 import type { Series, SeriesDetails } from '../types/series';
 
@@ -34,6 +35,15 @@ export async function fetchTopRatedMovies(): Promise<Movie[]> {
     '/movie/top_rated?language=en-US&page=1'
   );
   return data.results;
+}
+
+// Unlike the home-page helpers, the browse page needs the whole
+// envelope (total_pages drives the pagination controls), so this
+// one returns Paginated<Movie> instead of unwrapping results.
+export async function fetchMoviesPage(page: number): Promise<Paginated<Movie>> {
+  return fetchFromTmdb<Paginated<Movie>>(
+    `/movie/popular?language=en-US&page=${page}`
+  );
 }
 
 export async function fetchMovieDetails(id: string): Promise<MovieDetails> {

@@ -17,6 +17,14 @@ export const DetailsSkeleton = () => (
   </div>
 )
 
+export const GridSkeleton = () => (
+  <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+    {Array.from({ length: 18 }, (_, i) => (
+      <div key={i} className="aspect-[2/3] animate-pulse rounded-lg bg-zinc-900" />
+    ))}
+  </div>
+)
+
 export const RowSkeleton = () => (
   <section className="space-y-3">
     <div className="h-6 w-32 animate-pulse rounded bg-zinc-900" />
