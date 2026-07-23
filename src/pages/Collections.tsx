@@ -1,7 +1,6 @@
-
 const Collections = () => {
   return (
-    <div>Collections</div>
+    <div className="py-24 text-center text-zinc-500">Collections — coming soon</div>
   )
 }
 

@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { DetailsSkeleton } from '../components/Skeletons';
 import { useMovieDetails } from '../hooks/queries';
 
 const MovieDetails = () => {
@@ -8,7 +9,7 @@ const MovieDetails = () => {
   const { data: movie, isPending, isError } = useMovieDetails(id!);
 
   if (isPending) {
-    return <p className="p-8 text-center text-zinc-400">Loading…</p>;
+    return <DetailsSkeleton />;
   }
 
   if (isError) {
@@ -23,7 +24,7 @@ const MovieDetails = () => {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="space-y-8">
       <section className="flex flex-col gap-8 md:flex-row">
         {movie.poster_path && (
           <img

@@ -12,23 +12,29 @@ const detailsPath = (item: Movie | Series) =>
 const HorizontalList = ({ title, list }: { title: string; list: (Movie | Series)[] }) => {
 
     return (
-        <section>
-            <div>
-                <h2>{ title }</h2>
-            </div>
+        <section className="space-y-3">
+            <h2 className="text-xl font-semibold tracking-tight">{ title }</h2>
 
-            <div className="list">
+            {/* overflow-x-auto + shrink-0 children = a horizontal scroller;
+                snap-x makes swiping settle on card edges (mobile UX) */}
+            <div className="-mx-1 flex snap-x gap-4 overflow-x-auto px-1 pb-2">
                 {list.map((i) => (
                     <Link
                         key={i.id}
                         to={detailsPath(i)}
-                        className={'shrink-0 rounded-lg transition'}
+                        className="group w-28 shrink-0 snap-start rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 md:w-36"
                     >
-                        <img
-                            src={'https://image.tmdb.org/t/p/w200' + i.poster_path}
-                            alt={displayName(i)}
-                            className="h-32 w-20 rounded-lg object-cover"
-                        />
+                        <div className="overflow-hidden rounded-lg">
+                            <img
+                                src={'https://image.tmdb.org/t/p/w200' + i.poster_path}
+                                alt={displayName(i)}
+                                loading="lazy"
+                                className="aspect-[2/3] w-full object-cover transition duration-300 group-hover:scale-105"
+                            />
+                        </div>
+                        <p className="mt-2 truncate text-sm text-zinc-400 transition-colors group-hover:text-zinc-200">
+                            {displayName(i)}
+                        </p>
                     </Link>
                 ))}
             </div>

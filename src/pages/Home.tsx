@@ -1,5 +1,6 @@
 import Hero from '../components/Hero';
 import HorizontalList from '../components/HorizontalList';
+import { HeroSkeleton, RowSkeleton } from '../components/Skeletons';
 import {
   usePopularMovies,
   usePopularSeries,
@@ -17,7 +18,13 @@ const Home = () => {
     popularMovies.isError || topRatedMovies.isError || popularSeries.isError;
 
   if (isPending) {
-    return <p className="p-8 text-center text-zinc-400">Loading…</p>;
+    return (
+      <div className="space-y-10">
+        <HeroSkeleton />
+        <RowSkeleton />
+        <RowSkeleton />
+      </div>
+    );
   }
 
   if (isError) {
@@ -29,7 +36,7 @@ const Home = () => {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10">
+    <div className="space-y-10">
       <Hero movies={popularMovies.data} />
 
       <HorizontalList title="Movies" list={popularMovies.data} />

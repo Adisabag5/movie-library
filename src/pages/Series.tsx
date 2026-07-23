@@ -1,7 +1,6 @@
-
 const Series = () => {
   return (
-    <div>Series</div>
+    <div className="py-24 text-center text-zinc-500">Series — coming soon</div>
   )
 }
 
