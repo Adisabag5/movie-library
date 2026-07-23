@@ -3,6 +3,7 @@ import {
   fetchMovieDetails,
   fetchPopularMovies,
   fetchPopularSeries,
+  fetchSeriesDetails,
   fetchTopRatedMovies,
 } from '../core/http';
 
@@ -37,4 +38,11 @@ export function usePopularSeries() {
     queryKey: ['series', 'popular'],
     queryFn: fetchPopularSeries,
   });
+}
+
+export function useSeriesDetails(id: string) {
+  return useQuery({
+    queryKey: ['series', 'details', id],
+    queryFn: () => fetchSeriesDetails(id)
+  })
 }

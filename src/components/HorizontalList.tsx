@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import type { Movie, Series } from '../core/http'
+import type { Movie } from '../types/movie'
+import type { Series } from '../types/series'
 
 // Movies have `title`, series have `name` — the `in` check tells
 // TypeScript which of the two we are holding (union narrowing).

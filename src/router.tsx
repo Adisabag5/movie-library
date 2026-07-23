@@ -33,6 +33,10 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('./pages/MovieDetails')).default }),
       },
       {
+        path: 'series/:id',
+        lazy: async () => ({ Component: (await import('./pages/SeriesDetails')).default }),
+      },
+      {
         path: '*',
         lazy: async () => ({ Component: (await import('./pages/PageNotFound')).default }),
       },
