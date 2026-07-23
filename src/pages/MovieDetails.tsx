@@ -1,5 +1,7 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage';
 import { DetailsSkeleton } from '../components/Skeletons';
+import { imageUrl } from '../core/images';
 import { useMovieDetails } from '../hooks/queries';
 
 const MovieDetails = () => {
@@ -11,22 +13,14 @@ const MovieDetails = () => {
   }
 
   if (isError) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-red-500">Could not load this movie.</p>
-        <Link to="/" className="text-zinc-400 underline hover:text-zinc-200">
-          Back home
-        </Link>
-      </div>
-    );
+    return <ErrorMessage message="Could not load this movie." />;
   }
 
   return (
-    <div className="space-y-8">
-      <section className="flex flex-col gap-8 md:flex-row">
+    <section className="flex flex-col gap-8 md:flex-row">
         {movie.poster_path && (
           <img
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            src={imageUrl(movie.poster_path, 'w500')}
             alt={movie.title}
             className="w-64 shrink-0 self-center rounded-2xl shadow-lg md:self-start"
           />
@@ -57,8 +51,7 @@ const MovieDetails = () => {
 
           <p className="leading-relaxed text-zinc-300">{movie.overview}</p>
         </div>
-      </section>
-    </div>
+    </section>
   );
 };
 

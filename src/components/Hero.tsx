@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { imageUrl } from '../core/images';
 import type { Movie } from '../types/movie';
-
-const BACKDROP_URL = 'https://image.tmdb.org/t/p/w1280';
-const POSTER_URL = 'https://image.tmdb.org/t/p/w200';
 
 const Hero = ( { movies }: { movies: Movie[] } ) => {
     const [selectedMovie, setSelectedMovie] = useState<Movie>(movies[0]);
@@ -13,7 +11,7 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
         <section className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-lg">
             {/* Backdrop image with a gradient on top so text stays readable */}
             <img
-                src={BACKDROP_URL + (backdrop_path ?? poster_path)}
+                src={imageUrl(backdrop_path ?? poster_path, 'w1280')}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
             />
@@ -51,7 +49,7 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
                             }`}
                         >
                             <img
-                                src={POSTER_URL + m.poster_path}
+                                src={imageUrl(m.poster_path)}
                                 alt={m.title}
                                 loading="lazy"
                                 className="h-24 w-16 object-cover"

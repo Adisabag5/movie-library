@@ -1,5 +1,7 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage';
 import { DetailsSkeleton } from '../components/Skeletons';
+import { imageUrl } from '../core/images';
 import { useSeriesDetails } from '../hooks/queries';
 
 const SeriesDetails = () => {
@@ -11,22 +13,14 @@ const SeriesDetails = () => {
   }
 
   if (isError) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-red-500">Could not load this series.</p>
-        <Link to="/" className="text-zinc-400 underline hover:text-zinc-200">
-          Back home
-        </Link>
-      </div>
-    );
+    return <ErrorMessage message="Could not load this series." />;
   }
 
   return (
-    <div className="space-y-8">
-      <section className="flex flex-col gap-8 md:flex-row">
+    <section className="flex flex-col gap-8 md:flex-row">
         {series.poster_path && (
           <img
-            src={`https://image.tmdb.org/t/p/w500${series.poster_path}`}
+            src={imageUrl(series.poster_path, 'w500')}
             alt={series.name}
             className="w-64 shrink-0 self-center rounded-2xl shadow-lg md:self-start"
           />
@@ -59,8 +53,7 @@ const SeriesDetails = () => {
 
           <p className="leading-relaxed text-zinc-300">{series.overview}</p>
         </div>
-      </section>
-    </div>
+    </section>
   );
 };
 
