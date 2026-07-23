@@ -1,9 +1,10 @@
 import PosterCard from './PosterCard'
-import type { Movie } from '../types/movie'
-import type { Series } from '../types/series'
+import { mediaKey, type MediaItem } from '../core/media'
 
 // `dimmed` is set while a paginated query shows placeholder data.
-const PosterGrid = ({ list, dimmed = false }: { list: (Movie | Series)[]; dimmed?: boolean }) => {
+// Keys use mediaKey, not item.id: a collection can mix movies and
+// series, and their ids come from separate TMDB namespaces.
+const PosterGrid = ({ list, dimmed = false }: { list: MediaItem[]; dimmed?: boolean }) => {
     return (
         <div
             className={`grid grid-cols-3 gap-4 transition-opacity sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 ${
@@ -11,7 +12,7 @@ const PosterGrid = ({ list, dimmed = false }: { list: (Movie | Series)[]; dimmed
             }`}
         >
             {list.map((item) => (
-                <PosterCard key={item.id} item={item} />
+                <PosterCard key={mediaKey(item)} item={item} />
             ))}
         </div>
     )
