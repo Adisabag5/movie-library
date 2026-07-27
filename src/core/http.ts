@@ -27,9 +27,12 @@ export class TmdbError extends Error {
 }
 
 // `signal` comes from TanStack Query and aborts the request when the
-// component unmounts or the query key changes, so responses the user
-// has navigated away from never land.
-async function fetchFromTmdb<T>(endpoint: string, signal?: AbortSignal): Promise<T> {
+// query is cancelled or superseded, so responses the user has navigated
+// away from never land. It is required, not optional: an optional
+// parameter lets a call site silently drop cancellation, and it would
+// widen the type to `AbortSignal | undefined` while RequestInit.signal
+// is `AbortSignal | null`.
+async function fetchFromTmdb<T>(endpoint: string, signal: AbortSignal): Promise<T> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'GET',
     headers: HEADERS,
@@ -47,31 +50,37 @@ async function fetchFromTmdb<T>(endpoint: string, signal?: AbortSignal): Promise
 // the whole envelope. Callers that only want the first page ask for page 1
 // — that way the home page and the browse page share one cache entry
 // instead of fetching the same URL under two different keys.
-export function fetchPopularMovies(page: number, signal?: AbortSignal) {
-  return fetchFromTmdb<Paginated<Movie>>(
-    `/movie/popular?language=en-US&page=${page}`,
-    signal
-  );
+export function fetchPopularMovies(
+  page: number,
+  signal: AbortSignal
+): Promise<Paginated<Movie>> {
+  return fetchFromTmdb(`/movie/popular?language=en-US&page=${page}`, signal);
 }
 
-export function fetchTopRatedMovies(page: number, signal?: AbortSignal) {
-  return fetchFromTmdb<Paginated<Movie>>(
-    `/movie/top_rated?language=en-US&page=${page}`,
-    signal
-  );
+export function fetchTopRatedMovies(
+  page: number,
+  signal: AbortSignal
+): Promise<Paginated<Movie>> {
+  return fetchFromTmdb(`/movie/top_rated?language=en-US&page=${page}`, signal);
 }
 
-export function fetchPopularSeries(page: number, signal?: AbortSignal) {
-  return fetchFromTmdb<Paginated<Series>>(
-    `/tv/popular?language=en-US&page=${page}`,
-    signal
-  );
+export function fetchPopularSeries(
+  page: number,
+  signal: AbortSignal
+): Promise<Paginated<Series>> {
+  return fetchFromTmdb(`/tv/popular?language=en-US&page=${page}`, signal);
 }
 
-export function fetchMovieDetails(id: string, signal?: AbortSignal) {
-  return fetchFromTmdb<MovieDetails>(`/movie/${id}?language=en-US`, signal);
+export function fetchMovieDetails(
+  id: string,
+  signal: AbortSignal
+): Promise<MovieDetails> {
+  return fetchFromTmdb(`/movie/${id}?language=en-US`, signal);
 }
 
-export function fetchSeriesDetails(id: string, signal?: AbortSignal) {
-  return fetchFromTmdb<SeriesDetails>(`/tv/${id}?language=en-US`, signal);
+export function fetchSeriesDetails(
+  id: string,
+  signal: AbortSignal
+): Promise<SeriesDetails> {
+  return fetchFromTmdb(`/tv/${id}?language=en-US`, signal);
 }
