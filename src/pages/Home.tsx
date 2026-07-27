@@ -1,6 +1,6 @@
 import Hero from '../components/Hero';
 import HorizontalList from '../components/HorizontalList';
-import { OfflineMessage } from '../components/ErrorMessage';
+import { OfflineBanner } from '../components/ErrorMessage';
 import { HeroSkeleton, RowSkeleton } from '../components/Skeletons';
 import {
   usePopularMovies,
@@ -22,7 +22,7 @@ const Home = () => {
     popularMovies.isPaused || topRatedMovies.isPaused || popularSeries.isPaused;
 
   if (isPaused && isPending) {
-    return <OfflineMessage />;
+    return <OfflineBanner />;
   }
 
   if (isPending) {

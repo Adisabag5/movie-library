@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import ErrorMessage, { OfflineMessage } from '../components/ErrorMessage';
+import ErrorMessage, { OfflineBanner } from '../components/ErrorMessage';
 import { DetailsSkeleton } from '../components/Skeletons';
 import { imageUrl } from '../core/images';
 import { useMovieDetails } from '../hooks/queries';
@@ -11,7 +11,7 @@ const MovieDetails = () => {
   // Checked before isPending: a paused query is pending too, so this
   // branch has to win or we would render a skeleton that never resolves.
   if (isPaused) {
-    return <OfflineMessage />;
+    return <OfflineBanner />;
   }
 
   if (isPending) {

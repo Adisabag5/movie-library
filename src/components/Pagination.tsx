@@ -11,16 +11,22 @@ const buttonClass =
 
 const Pagination = ({ page, totalPages, isBusy = false, onPageChange }: PaginationProps) => {
     return (
-        <nav aria-label="Pagination" className="flex items-center justify-center gap-4">
+        <nav aria-label="Pagination" aria-busy={isBusy} className="flex items-center justify-center gap-4">
+            {/* Deliberately NOT disabled while busy. `page` is the page whose
+                data is on screen, so a request already in flight cannot be
+                raced past — and disabling both directions during a slow or
+                paused fetch strands the user with no way to navigate away. */}
             <button onClick={() => onPageChange(page - 1)} disabled={page <= 1} className={buttonClass}>
                 ← Prev
             </button>
 
-            <span className="text-sm text-zinc-400">
+            {/* aria-live so a screen reader announces the new page, which is
+                otherwise a silent content swap. */}
+            <span aria-live="polite" className="text-sm text-zinc-400">
                 Page {page} of {totalPages}
             </span>
 
-            <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages || isBusy} className={buttonClass}>
+            <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className={buttonClass}>
                 Next →
             </button>
         </nav>
