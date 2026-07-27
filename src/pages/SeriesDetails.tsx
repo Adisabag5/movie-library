@@ -6,7 +6,7 @@ import { useSeriesDetails } from '../hooks/queries';
 
 const SeriesDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: series, isPending, isError, isPaused } = useSeriesDetails(id!);
+  const { data: series, isPending, isError, isPaused, refetch } = useSeriesDetails(id!);
 
   // Checked before isPending: a paused query is pending too, so this
   // branch has to win or we would render a skeleton that never resolves.
@@ -19,7 +19,12 @@ const SeriesDetails = () => {
   }
 
   if (isError) {
-    return <ErrorMessage message="Could not load this series." />;
+    return (
+      <ErrorMessage
+        message="Could not load this series."
+        onRetry={() => void refetch()}
+      />
+    );
   }
 
   return (

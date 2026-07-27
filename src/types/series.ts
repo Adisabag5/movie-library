@@ -1,8 +1,5 @@
-export interface Genre {
-    id: number;
-    name: string;
-  }
-  
+import type { Genre } from './api';
+
   export interface Episode {
     id: number;
     name: string;

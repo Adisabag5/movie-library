@@ -6,7 +6,7 @@ import { useMovieDetails } from '../hooks/queries';
 
 const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: movie, isPending, isError, isPaused } = useMovieDetails(id!);
+  const { data: movie, isPending, isError, isPaused, refetch } = useMovieDetails(id!);
 
   // Checked before isPending: a paused query is pending too, so this
   // branch has to win or we would render a skeleton that never resolves.
@@ -19,7 +19,12 @@ const MovieDetails = () => {
   }
 
   if (isError) {
-    return <ErrorMessage message="Could not load this movie." />;
+    return (
+      <ErrorMessage
+        message="Could not load this movie."
+        onRetry={() => void refetch()}
+      />
+    );
   }
 
   return (

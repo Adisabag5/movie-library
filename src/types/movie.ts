@@ -1,4 +1,4 @@
-import type { Genre } from './series';
+import type { Genre } from './api';
 
 export interface Movie {
   adult: boolean;

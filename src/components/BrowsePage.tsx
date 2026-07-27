@@ -3,11 +3,9 @@ import ErrorMessage, { OfflineBanner } from './ErrorMessage'
 import Pagination from './Pagination'
 import PosterGrid from './PosterGrid'
 import { GridSkeleton } from './Skeletons'
+import { MAX_PAGES } from '../core/http'
 import type { MediaItem } from '../core/media'
 import type { Paginated } from '../types/api'
-
-// TMDB rejects page numbers above 500 even when total_pages is larger.
-const MAX_PAGES = 500
 
 interface BrowsePageProps<T extends MediaItem> {
     title: string
@@ -27,10 +25,12 @@ function BrowsePage<T extends MediaItem>({
     query,
     onPageChange,
 }: BrowsePageProps<T>) {
-    const { data, isPending, isError, isPaused, isPlaceholderData } = query
+    const { data, isPending, isError, isPaused, isPlaceholderData, refetch } = query
 
     if (isError) {
-        return <ErrorMessage message={errorMessage} />
+        // `void` because refetch returns a promise we deliberately ignore —
+        // the query result already drives what renders next.
+        return <ErrorMessage message={errorMessage} onRetry={() => void refetch()} />
     }
 
     return (

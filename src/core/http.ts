@@ -3,6 +3,11 @@ import type { Movie, MovieDetails } from '../types/movie';
 import type { Series, SeriesDetails } from '../types/series';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
+
+// TMDB rejects page numbers above 500 even when total_pages reports more.
+// It lives here because it is a fact about the API, and both the pager and
+// the URL parameter have to respect it.
+export const MAX_PAGES = 500;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 const HEADERS = {

@@ -1,12 +1,34 @@
 import { Link } from 'react-router-dom'
 
-const ErrorMessage = ({ message }: { message: string }) => {
+interface ErrorMessageProps {
+    message: string
+    /** Pass a query's `refetch` to offer a retry. Omitted means no button. */
+    onRetry?: () => void
+}
+
+const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
     return (
-        <div className="space-y-3 p-8 text-center">
+        <div className="space-y-4 p-8 text-center">
             <p className="text-red-500">{message}</p>
-            <Link to="/" className="inline-block text-sm text-zinc-400 underline hover:text-zinc-200">
-                Back home
-            </Link>
+
+            <div className="flex items-center justify-center gap-4">
+                {/* A failed query is usually transient — a dropped connection
+                    or a 5xx. Sending the user home to recover from that
+                    throws away the page they actually wanted. */}
+                {onRetry && (
+                    <button
+                        type="button"
+                        onClick={onRetry}
+                        className="rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                    >
+                        Try again
+                    </button>
+                )}
+
+                <Link to="/" className="text-sm text-zinc-400 underline hover:text-zinc-200">
+                    Back home
+                </Link>
+            </div>
         </div>
     )
 }
