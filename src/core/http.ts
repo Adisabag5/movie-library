@@ -43,7 +43,12 @@ async function fetchFromTmdb<T>(endpoint: string, signal: AbortSignal): Promise<
     throw new TmdbError(response.status, `TMDB request failed (${response.status})`);
   }
 
-  return response.json();
+  // `.json()` is typed `any`, which would let the caller's `T` flow out
+  // unchecked and invisible. Going through `unknown` forces the assertion
+  // to be written down: this is the one place the app trusts TMDB to match
+  // the interfaces in `src/types/`, and nothing verifies it at runtime.
+  const data: unknown = await response.json();
+  return data as T;
 }
 
 // Every list endpoint is paginated, so all of them take a page and return

@@ -19,7 +19,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    /* Indexing an array or record yields `T | undefined`. TypeScript cannot
+       know a lookup is in bounds, and pretending otherwise is what let
+       `movies[0]` typecheck on an empty array and crash the Hero. */
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }
