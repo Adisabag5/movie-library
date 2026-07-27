@@ -1,4 +1,4 @@
-import ErrorMessage from '../components/ErrorMessage';
+import ErrorMessage, { OfflineMessage } from '../components/ErrorMessage';
 import Pagination from '../components/Pagination';
 import PosterGrid from '../components/PosterGrid';
 import { GridSkeleton } from '../components/Skeletons';
@@ -9,10 +9,14 @@ const MAX_PAGES = 500;
 
 const Movies = () => {
   const { page, goToPage } = usePageParam();
-  const { data, isPending, isError, isPlaceholderData } = useMoviesPage(page);
+  const { data, isPending, isError, isPaused, isPlaceholderData } = useMoviesPage(page);
 
   if (isError) {
     return <ErrorMessage message="Could not load movies. Please try again later." />;
+  }
+
+  if (isPaused && isPending) {
+    return <OfflineMessage />;
   }
 
   return (

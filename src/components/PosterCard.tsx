@@ -30,6 +30,10 @@ const PosterCard = ({ item, className = '' }: { item: MediaItem; className?: str
                 </p>
             </Link>
 
+            {/* Hiding until hover only works where hover exists. On touch
+                devices group-hover never fires, which used to leave an
+                invisible-but-tappable button on every poster — so on
+                hoverless devices it stays visible. */}
             <button
                 type="button"
                 aria-pressed={inCollection}
@@ -43,7 +47,7 @@ const PosterCard = ({ item, className = '' }: { item: MediaItem; className?: str
                 className={`absolute right-2 top-2 rounded-full p-2 leading-none transition focus-visible:opacity-100 ${
                     inCollection
                         ? 'bg-red-600 opacity-100'
-                        : 'bg-zinc-950/70 opacity-0 hover:bg-red-600 group-hover:opacity-100'
+                        : 'bg-zinc-950/70 opacity-0 hover:bg-red-600 group-hover:opacity-100 [@media(hover:none)]:opacity-100'
                 }`}
             >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">

@@ -1,12 +1,18 @@
 import { useParams } from 'react-router-dom';
-import ErrorMessage from '../components/ErrorMessage';
+import ErrorMessage, { OfflineMessage } from '../components/ErrorMessage';
 import { DetailsSkeleton } from '../components/Skeletons';
 import { imageUrl } from '../core/images';
 import { useSeriesDetails } from '../hooks/queries';
 
 const SeriesDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: series, isPending, isError } = useSeriesDetails(id!);
+  const { data: series, isPending, isError, isPaused } = useSeriesDetails(id!);
+
+  // Checked before isPending: a paused query is pending too, so this
+  // branch has to win or we would render a skeleton that never resolves.
+  if (isPaused) {
+    return <OfflineMessage />;
+  }
 
   if (isPending) {
     return <DetailsSkeleton />;

@@ -13,11 +13,27 @@ const API_OPTIONS: RequestInit = {
   },
 };
 
+// Carries the HTTP status so callers can tell "this id doesn't exist"
+// (404, never worth retrying) from "the server is having a bad day"
+// (5xx, worth retrying). A plain Error would bury that in a string.
+export class TmdbError extends Error {
+  // Declared and assigned explicitly rather than as a constructor
+  // parameter property: this project sets erasableSyntaxOnly, which
+  // bans TS syntax that emits runtime code.
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = 'TmdbError';
+    this.status = status;
+  }
+}
+
 async function fetchFromTmdb<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${BASE_URL}${endpoint}`, API_OPTIONS);
 
   if (!response.ok) {
-    throw new Error(`TMDB request failed with status ${response.status}`);
+    throw new TmdbError(response.status, `TMDB request failed (${response.status})`);
   }
 
   return response.json();

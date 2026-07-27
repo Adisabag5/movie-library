@@ -4,7 +4,17 @@ import { imageUrl } from '../core/images';
 import type { Movie } from '../types/movie';
 
 const Hero = ( { movies }: { movies: Movie[] } ) => {
-    const [selectedMovie, setSelectedMovie] = useState<Movie>(movies[0]);
+    // Store only the id and derive the movie during render. Copying the
+    // whole object into state would freeze it at first render: when the
+    // list refetches, state would still point at an item from the old
+    // array — possibly one that is no longer in the list at all.
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+
+    const selectedMovie = movies.find((m) => m.id === selectedId) ?? movies[0];
+
+    // The caller may hand us an empty list (a filtered or failed response).
+    if (!selectedMovie) return null;
+
     const { id, title, backdrop_path, poster_path, vote_average, overview, release_date } = selectedMovie;
 
     return(
@@ -43,7 +53,8 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
                     {movies.map((m) => (
                         <button
                             key={m.id}
-                            onClick={() => setSelectedMovie(m)}
+                            type="button"
+                            onClick={() => setSelectedId(m.id)}
                             className={`shrink-0 overflow-hidden rounded-lg transition ${
                                 m.id === selectedMovie.id ? 'ring-2 ring-red-600' : 'opacity-60 hover:opacity-100'
                             }`}
