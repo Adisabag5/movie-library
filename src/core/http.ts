@@ -5,12 +5,9 @@ import type { Series, SeriesDetails } from '../types/series';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-const API_OPTIONS: RequestInit = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization: `Bearer ${API_KEY}`,
-  },
+const HEADERS = {
+  accept: 'application/json',
+  Authorization: `Bearer ${API_KEY}`,
 };
 
 // Carries the HTTP status so callers can tell "this id doesn't exist"
@@ -29,8 +26,15 @@ export class TmdbError extends Error {
   }
 }
 
-async function fetchFromTmdb<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${BASE_URL}${endpoint}`, API_OPTIONS);
+// `signal` comes from TanStack Query and aborts the request when the
+// component unmounts or the query key changes, so responses the user
+// has navigated away from never land.
+async function fetchFromTmdb<T>(endpoint: string, signal?: AbortSignal): Promise<T> {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: 'GET',
+    headers: HEADERS,
+    signal,
+  });
 
   if (!response.ok) {
     throw new TmdbError(response.status, `TMDB request failed (${response.status})`);
@@ -39,43 +43,35 @@ async function fetchFromTmdb<T>(endpoint: string): Promise<T> {
   return response.json();
 }
 
-export async function fetchPopularMovies(): Promise<Movie[]> {
-  const data = await fetchFromTmdb<{ results: Movie[] }>(
-    '/movie/popular?language=en-US&page=1'
-  );
-  return data.results;
-}
-
-export async function fetchTopRatedMovies(): Promise<Movie[]> {
-  const data = await fetchFromTmdb<{ results: Movie[] }>(
-    '/movie/top_rated?language=en-US&page=1'
-  );
-  return data.results;
-}
-
-export async function fetchMoviesPage(page: number): Promise<Paginated<Movie>> {
+// Every list endpoint is paginated, so all of them take a page and return
+// the whole envelope. Callers that only want the first page ask for page 1
+// — that way the home page and the browse page share one cache entry
+// instead of fetching the same URL under two different keys.
+export function fetchPopularMovies(page: number, signal?: AbortSignal) {
   return fetchFromTmdb<Paginated<Movie>>(
-    `/movie/popular?language=en-US&page=${page}`
+    `/movie/popular?language=en-US&page=${page}`,
+    signal
   );
 }
 
-export async function fetchMovieDetails(id: string): Promise<MovieDetails> {
-  return fetchFromTmdb<MovieDetails>(`/movie/${id}?language=en-US`);
-}
-
-export async function fetchPopularSeries(): Promise<Series[]> {
-  const data = await fetchFromTmdb<{ results: Series[] }>(
-    '/tv/popular?language=en-US&page=1'
+export function fetchTopRatedMovies(page: number, signal?: AbortSignal) {
+  return fetchFromTmdb<Paginated<Movie>>(
+    `/movie/top_rated?language=en-US&page=${page}`,
+    signal
   );
-  return data.results;
 }
 
-export async function fetchSeriesDetails(id: string): Promise<SeriesDetails> {
-  return fetchFromTmdb<SeriesDetails>(`/tv/${id}?language=en-US`);
-}
-
-export async function fetchSeriesPage(page: number): Promise<Paginated<Series>> {
+export function fetchPopularSeries(page: number, signal?: AbortSignal) {
   return fetchFromTmdb<Paginated<Series>>(
-    `/tv/popular?language=en-US&page=${page}`
+    `/tv/popular?language=en-US&page=${page}`,
+    signal
   );
+}
+
+export function fetchMovieDetails(id: string, signal?: AbortSignal) {
+  return fetchFromTmdb<MovieDetails>(`/movie/${id}?language=en-US`, signal);
+}
+
+export function fetchSeriesDetails(id: string, signal?: AbortSignal) {
+  return fetchFromTmdb<SeriesDetails>(`/tv/${id}?language=en-US`, signal);
 }
