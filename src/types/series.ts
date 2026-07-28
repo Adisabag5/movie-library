@@ -15,7 +15,7 @@ import type { Genre } from './api';
     show_id: number;
     still_path: string | null;
   }
-  
+
   export interface Season {
     air_date: string | null;
     episode_count: number;
@@ -26,7 +26,7 @@ import type { Genre } from './api';
     season_number: number;
     vote_average: number;
   }
-  
+
   export interface Network {
     id: number;
     logo_path: string | null;
@@ -50,7 +50,7 @@ import type { Genre } from './api';
     vote_average: number;
     vote_count: number;
   }
-  
+
   export interface SeriesDetails extends Omit<Series, 'genre_ids'> {
     created_by: {
       id: number;

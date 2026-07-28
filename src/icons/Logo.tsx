@@ -2,7 +2,6 @@ import { forwardRef, memo } from 'react'
 import type { SVGProps } from 'react'
 
 interface IconProps extends SVGProps<SVGSVGElement> {
-  /** Icon size (default: 1737) */
   size?: number
 }
 

@@ -1,9 +1,6 @@
 import PosterCard from './PosterCard'
 import { mediaKey, type MediaItem } from '../core/media'
 
-// `dimmed` is set while a paginated query shows placeholder data.
-// Keys use mediaKey, not item.id: a collection can mix movies and
-// series, and their ids come from separate TMDB namespaces.
 const PosterGrid = ({ list, dimmed = false }: { list: MediaItem[]; dimmed?: boolean }) => {
     return (
         <div

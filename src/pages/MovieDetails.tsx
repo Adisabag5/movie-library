@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import BackButton from '../components/BackButton';
 import ErrorMessage, { OfflineBanner } from '../components/ErrorMessage';
 import { DetailsSkeleton } from '../components/Skeletons';
 import { imageUrl } from '../core/images';
@@ -8,8 +9,6 @@ const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { data: movie, isPending, isError, isPaused, refetch } = useMovieDetails(id!);
 
-  // Checked before isPending: a paused query is pending too, so this
-  // branch has to win or we would render a skeleton that never resolves.
   if (isPaused) {
     return <OfflineBanner />;
   }
@@ -28,41 +27,47 @@ const MovieDetails = () => {
   }
 
   return (
-    <section className="flex flex-col gap-8 md:flex-row">
+    <div className="animate-fade-up">
+      <BackButton fallback="/movies" label="All movies" />
+
+      <section className="flex flex-col gap-8 md:flex-row">
         {movie.poster_path && (
           <img
             src={imageUrl(movie.poster_path, 'w500')}
             alt={movie.title}
-            className="w-64 shrink-0 self-center rounded-2xl shadow-lg md:self-start"
+            className="w-64 shrink-0 self-center rounded-2xl shadow-xl shadow-ink/20 ring-1 ring-bark/50 md:self-start"
           />
         )}
 
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">{movie.title}</h1>
+          <h1 className="text-4xl font-black tracking-tight text-ink">{movie.title}</h1>
 
           {movie.tagline && (
-            <p className="italic text-zinc-400">{movie.tagline}</p>
+            <p className="text-lg italic text-clay-deep">{movie.tagline}</p>
           )}
 
           <ul className="flex flex-wrap gap-2">
             {movie.genres.map((genre) => (
               <li
                 key={genre.id}
-                className="rounded-full bg-zinc-800 px-3 py-1 text-sm text-zinc-300"
+                className="rounded-full bg-sand px-3 py-1 text-sm font-semibold text-ink ring-1 ring-bark/50"
               >
                 {genre.name}
               </li>
             ))}
           </ul>
 
-          <p className="text-sm text-zinc-400">
-            {movie.release_date.slice(0, 4)} · {movie.runtime} min · ★{' '}
-            {movie.vote_average.toFixed(1)}
+          <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink-soft">
+            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-bold text-ink">
+              ★ {movie.vote_average.toFixed(1)}
+            </span>
+            {movie.release_date.slice(0, 4)} · {movie.runtime} min
           </p>
 
-          <p className="leading-relaxed text-zinc-300">{movie.overview}</p>
+          <p className="leading-relaxed text-ink/85">{movie.overview}</p>
         </div>
-    </section>
+      </section>
+    </div>
   );
 };
 

@@ -8,10 +8,6 @@ import {
 } from '../core/http';
 import type { Paginated } from '../types/api';
 
-// queryOptions() defines a query once — key and fetcher together, fully
-// typed — so every consumer of the same data provably uses the same key.
-// That is what stops the home page and the browse page from fetching the
-// same URL into two different cache entries.
 const popularMoviesQuery = (page: number) =>
   queryOptions({
     queryKey: ['movies', 'popular', page],
@@ -42,8 +38,6 @@ const seriesDetailsQuery = (id: string) =>
     queryFn: ({ signal }) => fetchSeriesDetails(id, signal),
   });
 
-// Browse pages need the whole envelope (total_pages drives the pager) and
-// want the previous page to stay on screen while the next one loads.
 export function useMoviesPage(page: number) {
   return useQuery({ ...popularMoviesQuery(page), placeholderData: keepPreviousData });
 }
@@ -52,9 +46,6 @@ export function useSeriesPage(page: number) {
   return useQuery({ ...popularSeriesQuery(page), placeholderData: keepPreviousData });
 }
 
-// The home page wants only the array. `select` unwraps it per-consumer
-// without touching what is stored in the cache — so these hooks read the
-// exact same cache entry as the browse hooks above, just shaped differently.
 const toResults = <T,>(data: Paginated<T>) => data.results;
 
 export function usePopularMovies() {

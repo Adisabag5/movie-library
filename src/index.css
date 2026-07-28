@@ -1,3 +1,99 @@
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #fdf4e7;
+  --color-sand: #f7e8d3;
+  --color-linen: #eedcc0;
+  --color-bark: #d8c3a3;
 
+  --color-ink: #2b1a11;
+  --color-ink-soft: #7c6552;
+
+  --color-clay: #d1561d;
+  --color-clay-deep: #a63c11;
+  --color-marigold: #f2a51c;
+  --color-sage: #6d8360;
+  --color-oxblood: #7d2b39;
+
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-fade-in: fade-in 0.4s ease-out backwards;
+  --animate-drift: drift 18s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+
+    background-image: radial-gradient(
+      var(--color-linen) 0.5px,
+      transparent 0.5px
+    );
+    background-size: 18px 18px;
+  }
+
+  ::selection {
+    background-color: var(--color-marigold);
+    color: var(--color-ink);
+  }
+}
+
+@utility scroll-rail {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

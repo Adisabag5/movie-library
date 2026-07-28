@@ -1,39 +1,38 @@
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { imageUrl } from '../core/images'
 import { detailsPath, displayName, type MediaItem } from '../core/media'
 import { useCollection, useInCollection } from '../stores/collection'
 
-// One poster card, two layouts: HorizontalList passes fixed widths,
-// the browse grids let the grid column set the width.
-// The collection button is a sibling of the Link, not a child —
-// nesting a button inside a link is invalid HTML.
-const PosterCard = ({ item, className = '' }: { item: MediaItem; className?: string }) => {
+interface PosterCardProps {
+    item: MediaItem
+    className?: string
+    style?: CSSProperties
+}
+
+const PosterCard = ({ item, className = '', style }: PosterCardProps) => {
     const toggle = useCollection((state) => state.toggle)
     const inCollection = useInCollection(item)
 
     return (
-        <div className={`group relative ${className}`}>
+        <div className={`group relative ${className}`} style={style}>
             <Link
                 to={detailsPath(item)}
-                className="block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                className="block rounded-xl transition-transform duration-300 ease-out hover:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
             >
-                <div className="overflow-hidden rounded-lg">
+                <div className="overflow-hidden rounded-xl bg-sand shadow-md shadow-ink/10 ring-1 ring-bark/40 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-clay/25">
                     <img
                         src={imageUrl(item.poster_path)}
                         alt={displayName(item)}
                         loading="lazy"
-                        className="aspect-[2/3] w-full object-cover transition duration-300 group-hover:scale-105"
+                        className="aspect-[2/3] w-full object-cover brightness-95 saturate-[0.95] transition-all duration-500 ease-out group-hover:scale-[1.06] group-hover:brightness-110 group-hover:saturate-110"
                     />
                 </div>
-                <p className="mt-2 truncate text-sm text-zinc-400 transition-colors group-hover:text-zinc-200">
+                <p className="mt-2 truncate text-sm font-semibold text-ink-soft transition-colors duration-300 group-hover:text-clay">
                     {displayName(item)}
                 </p>
             </Link>
 
-            {/* Hiding until hover only works where hover exists. On touch
-                devices group-hover never fires, which used to leave an
-                invisible-but-tappable button on every poster — so on
-                hoverless devices it stays visible. */}
             <button
                 type="button"
                 aria-pressed={inCollection}
@@ -44,17 +43,17 @@ const PosterCard = ({ item, className = '' }: { item: MediaItem; className?: str
                 }
                 title={inCollection ? 'Remove from collection' : 'Add to collection'}
                 onClick={() => toggle(item)}
-                className={`absolute right-2 top-2 rounded-full p-2 leading-none transition focus-visible:opacity-100 ${
+                className={`absolute right-2 top-2 rounded-full p-2 leading-none shadow-lg transition-all duration-300 hover:scale-110 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marigold ${
                     inCollection
-                        ? 'bg-red-600 opacity-100'
-                        : 'bg-zinc-950/70 opacity-0 hover:bg-red-600 group-hover:opacity-100 [@media(hover:none)]:opacity-100'
+                        ? 'bg-marigold text-ink opacity-100 shadow-marigold/40'
+                        : 'bg-paper/85 text-ink opacity-0 shadow-ink/25 backdrop-blur-sm hover:bg-clay hover:text-paper group-hover:opacity-100 [@media(hover:none)]:opacity-100'
                 }`}
             >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     {inCollection ? (
-                        <path d="M2 7.5 5.5 11 12 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2 7.5 5.5 11 12 3.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     ) : (
-                        <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                     )}
                 </svg>
             </button>

@@ -1,8 +1,5 @@
 import { isRouteErrorResponse, Link, useRouteError } from 'react-router-dom';
 
-// Rendered by the router whenever a route throws — a failed lazy chunk,
-// an error thrown during render, or a 404 response. useRouteError gives
-// us whatever was thrown, so we narrow it before displaying anything.
 const ErrorPage = () => {
   const error = useRouteError();
 

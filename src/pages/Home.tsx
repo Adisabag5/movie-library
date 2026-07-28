@@ -13,45 +13,47 @@ const Home = () => {
   const topRatedMovies = useTopRatedMovies();
   const popularSeries = usePopularSeries();
 
-  const isPending =
-    popularMovies.isPending || topRatedMovies.isPending || popularSeries.isPending;
-  const isError =
-    popularMovies.isError || topRatedMovies.isError || popularSeries.isError;
-
   const isPaused =
     popularMovies.isPaused || topRatedMovies.isPaused || popularSeries.isPaused;
 
-  if (isPaused && isPending) {
+  if (isPaused) {
     return <OfflineBanner />;
-  }
-
-  if (isPending) {
-    return (
-      <div className="space-y-10">
-        <HeroSkeleton />
-        <RowSkeleton />
-        <RowSkeleton />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <p className="p-8 text-center text-red-500">
-        Could not load movies. Please try again later.
-      </p>
-    );
   }
 
   return (
     <div className="space-y-10">
-      <Hero movies={popularMovies.data} />
+      {
+        popularMovies?.isPending ?
+          <HeroSkeleton /> :
+            popularMovies.isError ?
+              <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
+                <Hero movies={popularMovies.data} />
+      }
 
-      <HorizontalList title="Movies" list={popularMovies.data} />
+      {
+        popularMovies?.isPending ?
+          <RowSkeleton /> :
+            popularMovies.isError ?
+                <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
+                  <HorizontalList title="Movies" list={popularMovies.data} />
+      }
 
-      <HorizontalList title="Series" list={popularSeries.data} />
+      {
+        popularSeries?.isPending ?
+          <RowSkeleton /> :
+              popularSeries.isError ?
+                <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load series. Please try again later.</p> :
+                  <HorizontalList title="Series" list={popularSeries.data} />
+      }
 
-      <HorizontalList title="Top Rated" list={topRatedMovies.data} />
+      {
+        topRatedMovies?.isPending ?
+          <RowSkeleton /> :
+              topRatedMovies.isError ?
+                <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
+                  <HorizontalList title="Top Rated" list={topRatedMovies.data} />
+      }
+
     </div>
   );
 };
