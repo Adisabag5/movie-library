@@ -1,18 +1,78 @@
-import BrowsePage from '../components/BrowsePage';
+import ErrorMessage, { OfflineBanner } from '../components/ErrorMessage';
+import FilterBar from '../components/filters/FilterBar';
+import SearchInput from '../components/filters/SearchInput';
+import Pagination from '../components/Pagination';
+import PosterGrid from '../components/PosterGrid';
+import { GridSkeleton } from '../components/Skeletons';
+import { toDiscoverQuery } from '../core/discoverParams';
+import { buildFilterFields } from '../core/filters';
+import { MAX_PAGES } from '../core/http';
 import { useSeriesPage } from '../hooks/queries';
+import { useFilterParams } from '../hooks/useFilterParams';
 import { usePageParam } from '../hooks/usePageParam';
+import { useSearchTerm } from '../hooks/useSearchTerm';
 
 const Series = () => {
   const { page, goToPage } = usePageParam();
-  const query = useSeriesPage(page);
+  const fields = buildFilterFields('tv');
+  const { values, setFilter, reset } = useFilterParams({ fields });
+  const { term, setTerm } = useSearchTerm();
+
+  // Searching and filtering are mutually exclusive on TMDB, so the filter
+  // query is dropped while a term is present rather than sent and ignored.
+  const isSearching = term !== '';
+
+  const { data, isPending, isError, isPaused, isPlaceholderData, refetch } = useSeriesPage(
+    page,
+    isSearching ? '' : toDiscoverQuery(values, 'tv'),
+    term
+  );
+
+
+  if (isError) {
+    return (
+      <ErrorMessage
+        message="Could not load series. Please try again later."
+        onRetry={() => void refetch()}
+      />
+    );
+  }
 
   return (
-    <BrowsePage
-      title="Series"
-      errorMessage="Could not load series. Please try again later."
-      query={query}
-      onPageChange={goToPage}
-    />
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold tracking-tight">Series</h1>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput value={term} onChange={setTerm} placeholder="Search series" isBusy={isPending} />
+
+        <FilterBar
+          values={values}
+          onChange={setFilter}
+          fields={fields}
+          onReset={reset}
+          isBusy={isPending}
+          isDisabled={isSearching}
+          disabledHint="Filters are unavailable while searching"
+        />
+      </div>
+
+      {isPaused && <OfflineBanner />}
+
+      {isPending && !isPaused && <GridSkeleton />}
+
+      {!isPending && (
+        <>
+          <PosterGrid list={data.results} dimmed={isPlaceholderData} />
+
+          <Pagination
+            page={data.page}
+            totalPages={Math.min(data.total_pages, MAX_PAGES)}
+            isBusy={isPlaceholderData}
+            onPageChange={goToPage}
+          />
+        </>
+      )}
+    </div>
   );
 };
 
