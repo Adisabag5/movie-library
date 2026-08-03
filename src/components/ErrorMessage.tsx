@@ -8,20 +8,20 @@ interface ErrorMessageProps {
 const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
     return (
         <div className="space-y-4 p-8 text-center">
-            <p className="text-red-500">{message}</p>
+            <p className="font-semibold text-oxblood">{message}</p>
 
             <div className="flex items-center justify-center gap-4">
                 {onRetry && (
                     <button
                         type="button"
                         onClick={onRetry}
-                        className="rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                        className="rounded-full bg-accent px-5 py-2 text-sm font-bold text-paper shadow-sm shadow-accent/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
                         Try again
                     </button>
                 )}
 
-                <Link to="/" className="text-sm text-zinc-400 underline hover:text-zinc-200">
+                <Link to="/" className="text-sm font-semibold text-ink-soft underline underline-offset-4 transition-colors hover:text-accent">
                     Back home
                 </Link>
             </div>

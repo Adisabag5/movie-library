@@ -41,6 +41,8 @@ const Series = () => {
 
   return (
     <div className="space-y-8">
+      <title>Series — Movie Library</title>
+
       <h1 className="text-2xl font-bold tracking-tight">Series</h1>
 
       <div className="flex flex-wrap items-center gap-2">

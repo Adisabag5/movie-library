@@ -41,6 +41,8 @@ const Movies = () => {
 
   return (
     <div className="space-y-8">
+      <title>Movies — Movie Library</title>
+
       <h1 className="text-2xl font-bold tracking-tight">Movies</h1>
 
       <div className="flex flex-wrap items-center gap-2">

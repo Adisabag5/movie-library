@@ -4,7 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>movie-library</title>
+
+    <!-- Fallback title only. Each route renders its own <title>, which React 19
+         hoists into the head — no helmet library needed. This is what shows
+         before React mounts, and what a crawler that does not run JS will see. -->
+    <title>Movie Library — Browse films and series</title>
+    <meta
+      name="description"
+      content="Browse popular films and series, filter by genre, rating, runtime and year, and keep a personal collection. Built with React, TanStack Query and the TMDB API."
+    />
+    <meta name="theme-color" content="#fbf8f3" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Movie Library — Browse films and series" />
+    <meta
+      property="og:description"
+      content="Browse popular films and series, filter by genre, rating, runtime and year, and keep a personal collection. Built with React, TanStack Query and the TMDB API."
+    />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <div id="root"></div>

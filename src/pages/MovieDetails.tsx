@@ -28,6 +28,10 @@ const MovieDetails = () => {
 
   return (
     <div className="animate-fade-up">
+      {/* Rendered here, not at the top of the component: the name is only
+          known once the request resolves. Until then the previous title
+          stays, which beats a flash of "undefined" in the tab. */}
+      <title>{`${movie.title} — Movie Library`}</title>
       <BackButton fallback="/movies" label="All movies" />
 
       <section className="flex flex-col gap-8 md:flex-row">

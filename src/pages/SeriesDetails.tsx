@@ -28,6 +28,7 @@ const SeriesDetails = () => {
 
   return (
     <div className="animate-fade-up">
+      <title>{`${series.name} — Movie Library`}</title>
       <BackButton fallback="/series" label="All series" />
 
       <section className="flex flex-col gap-8 md:flex-row">

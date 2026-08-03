@@ -8,6 +8,8 @@ const Collections = () => {
 
   return (
     <div className="space-y-8">
+      <title>My Collection — Movie Library</title>
+
       <h1 className="text-2xl font-bold tracking-tight text-ink">My Collection</h1>
 
       {items.length === 0 ? (

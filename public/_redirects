@@ -1,0 +1,5 @@
+# Netlify SPA fallback. Without it, loading /movies or /movie/550 directly
+# returns 404 — the server looks for a file that does not exist, because the
+# router only exists in the client bundle. 200 rewrites rather than redirects,
+# so the URL the visitor typed is the URL the router sees.
+/*  /index.html  200

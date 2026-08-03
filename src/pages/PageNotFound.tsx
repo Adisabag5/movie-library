@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom'
 const PageNotFound = () => {
   return (
     <div className="flex flex-col items-center gap-4 py-24 text-center">
-        <h1 className="text-6xl font-bold text-zinc-700">404</h1>
-        <p className="text-lg text-zinc-400">This page doesn't exist.</p>
+        <title>Not found — Movie Library</title>
+
+        <h1 className="text-6xl font-black tracking-tight text-ink">404</h1>
+
+        <p className="text-lg font-medium text-ink-soft">This page doesn&apos;t exist.</p>
+
         <Link
           to="/"
-          className="rounded-lg bg-red-600 px-5 py-2 font-medium text-white transition-colors hover:bg-red-700"
+          className="mt-2 rounded-full bg-accent px-6 py-2.5 font-bold text-paper shadow-lg shadow-accent/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Back to Home
         </Link>

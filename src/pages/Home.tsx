@@ -23,6 +23,14 @@ const Home = () => {
 
   return (
     <div className="space-y-10">
+      <title>Movie Library — Browse films and series</title>
+
+      {/* Visually hidden, not absent. The hero is the visual focus, so a large
+          "Movie Library" heading would fight the design — but without an h1 the
+          landing page has no top-level label in the accessibility tree, and its
+          headings start at h2. sr-only keeps the outline intact. */}
+      <h1 className="sr-only">Movie Library — browse popular films and series</h1>
+
       <Reveal>
         {
           popularMovies?.isPending ?
