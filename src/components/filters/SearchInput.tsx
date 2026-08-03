@@ -74,12 +74,12 @@ const SearchInput = ({
     }
 
     return (
-        <div className="relative w-56">
+        <div className="relative w-44">
             <label htmlFor={inputId} className="sr-only">
                 {label}
             </label>
 
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-clay" />
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-accent" />
 
             <input
                 id={inputId}
@@ -94,8 +94,8 @@ const SearchInput = ({
                         commit(draft)
                     }
                 }}
-                className={`h-9 w-full rounded-lg border bg-paper pl-9 pr-8 text-sm font-semibold text-ink placeholder:font-medium placeholder:text-ink-soft transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay [&::-webkit-search-cancel-button]:appearance-none ${
-                    draft ? 'border-clay' : 'border-bark hover:border-clay'
+                className={`h-9 w-full rounded-lg border bg-paper pl-9 pr-8 text-sm font-semibold text-ink placeholder:font-medium placeholder:text-ink-soft transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [&::-webkit-search-cancel-button]:appearance-none ${
+                    draft ? 'border-accent' : 'border-bark hover:border-accent'
                 }`}
             />
 
@@ -105,7 +105,7 @@ const SearchInput = ({
                     onClick={clear}
                     aria-label="Clear search"
                     title="Clear search"
-                    className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-ink-soft transition-colors duration-200 hover:bg-sand hover:text-clay focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+                    className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-ink-soft transition-colors duration-200 hover:bg-sand hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                     <CloseIcon className="h-2.5 w-2.5" />
                 </button>

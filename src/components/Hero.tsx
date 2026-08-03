@@ -22,11 +22,11 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/85 to-paper/15" />
-            <div className="absolute inset-0 animate-drift bg-[linear-gradient(115deg,var(--color-marigold),transparent_45%,var(--color-clay))] bg-[length:200%_200%] opacity-30 mix-blend-soft-light" />
+            <div className="absolute inset-0 animate-drift bg-[linear-gradient(115deg,var(--color-accent-soft),transparent_45%,var(--color-accent))] bg-[length:200%_200%] opacity-30 mix-blend-soft-light" />
 
             <div className="relative flex min-h-[30rem] flex-col justify-end gap-4 p-5 md:min-h-[34rem] md:p-10">
                 <div className="max-w-2xl space-y-3">
-                    <p className="animate-fade-up text-xs font-black uppercase tracking-[0.2em] text-clay-deep" style={{ animationDelay: '60ms' }}>
+                    <p className="animate-fade-up text-xs font-black uppercase tracking-[0.2em] text-accent-deep" style={{ animationDelay: '60ms' }}>
                         Featured
                     </p>
 
@@ -35,7 +35,7 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
                     </h2>
 
                     <div className="flex animate-fade-up items-center gap-3 text-sm text-ink-soft" style={{ animationDelay: '180ms' }}>
-                        <span className="rounded-full bg-clay px-2.5 py-0.5 font-bold text-paper">
+                        <span className="rounded-full bg-accent px-2.5 py-0.5 font-bold text-paper">
                             ★ {vote_average.toFixed(1)}
                         </span>
                         <span className="font-semibold">{release_date.slice(0, 4)}</span>
@@ -49,7 +49,7 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
                 <div className="animate-fade-up" style={{ animationDelay: '300ms' }}>
                     <Link
                         to={`/movie/${id}`}
-                        className="group inline-flex items-center gap-2 rounded-full bg-clay px-7 py-3 font-bold text-paper shadow-lg shadow-clay/40 transition-all duration-300 hover:-translate-y-0.5 hover:bg-marigold hover:text-ink hover:shadow-xl hover:shadow-marigold/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marigold"
+                        className="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 font-bold text-paper shadow-lg shadow-accent/40 transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-soft hover:text-ink hover:shadow-xl hover:shadow-accent-soft/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-soft"
                     >
                         Details
                         <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -71,9 +71,9 @@ const Hero = ( { movies }: { movies: Movie[] } ) => {
                                     onClick={() => setSelectedId(m.id)}
                                     aria-label={`Show ${m.title}`}
                                     aria-pressed={isSelected}
-                                    className={`group relative shrink-0 snap-start overflow-hidden rounded-xl transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay ${
+                                    className={`group relative shrink-0 snap-start overflow-hidden rounded-xl transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                                         isSelected
-                                            ? '-translate-y-1 shadow-lg shadow-clay/40 ring-2 ring-clay'
+                                            ? '-translate-y-1 shadow-lg shadow-accent/40 ring-2 ring-accent'
                                             : 'opacity-70 hover:-translate-y-1 hover:opacity-100'
                                     }`}
                                 >

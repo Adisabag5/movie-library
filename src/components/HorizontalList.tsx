@@ -9,7 +9,7 @@ const HorizontalList = ({ title, list }: { title: string; list: MediaItem[] }) =
                 <h2 className="shrink-0 text-xl font-black tracking-tight text-ink">
                     {title}
                 </h2>
-                <span className="h-px flex-1 bg-gradient-to-r from-clay/50 via-bark/60 to-transparent" />
+                <span className="h-px flex-1 bg-gradient-to-r from-accent/50 via-bark/60 to-transparent" />
             </div>
 
             <div className="scroll-rail -mx-1 flex snap-x gap-4 overflow-x-auto px-1 py-3">

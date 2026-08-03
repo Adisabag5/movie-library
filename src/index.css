@@ -1,22 +1,40 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Brand accents are turquoise. They are named by role rather than by hue
+   (accent / accent-deep / accent-soft) so the next rebrand is a three-line
+   change here instead of a find-and-replace across every component.
+
+   accent      fills, borders, active states
+   accent-deep small text — the bright turquoise fails contrast at body sizes
+   accent-soft badges and highlights, always with ink on top
+
+   Neutrals are kept just off-warm so the paper reads as paper without
+   fighting the teal.
+--------------------------------------------------------------------------- */
 @theme {
-  --color-paper: #fdf4e7;
-  --color-sand: #f7e8d3;
-  --color-linen: #eedcc0;
-  --color-bark: #d8c3a3;
+  --color-paper: #fbf8f3;
+  --color-sand: #f0ede5;
+  --color-linen: #e4e0d6;
+  --color-bark: #cbc7ba;
 
-  --color-ink: #2b1a11;
-  --color-ink-soft: #7c6552;
+  --color-ink: #1e2523;
+  /* Darkened until it clears 4.5:1 on paper — it carries poster titles and
+     meta text, which are body sizes. */
+  --color-ink-soft: #5b6461;
 
-  --color-clay: #d1561d;
-  --color-clay-deep: #a63c11;
-  --color-marigold: #f2a51c;
+  /* accent is dark enough that paper-on-accent clears 4.5:1, because it fills
+     buttons with light text on top. A brighter teal looked better and failed. */
+  --color-accent: #0f766e;
+  --color-accent-deep: #115e59;
+  --color-accent-soft: #5eead4;
+
   --color-sage: #6d8360;
-  --color-oxblood: #7d2b39;
+  --color-oxblood: #9b2c3f;
 
   --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-fade-in: fade-in 0.4s ease-out backwards;
+  --animate-page-in: page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-drift: drift 18s ease-in-out infinite;
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
 }
@@ -38,6 +56,19 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+/* Page enter: a short rise with a hair of scale, so a route change reads as
+   arriving rather than snapping. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -74,7 +105,7 @@
   }
 
   ::selection {
-    background-color: var(--color-marigold);
+    background-color: var(--color-accent-soft);
     color: var(--color-ink);
   }
 }
@@ -87,6 +118,24 @@
   }
 }
 
+/* Scroll-reveal: the element sits hidden and shifted until <Reveal /> marks it
+   visible. Kept in CSS rather than inline styles so the transition survives
+   re-renders and honours the reduced-motion block below.
+
+   `is-hidden` is applied only once the observer is attached — without that,
+   anyone with JS disabled or an observer that never fires would be left with
+   permanently invisible content. */
+@utility reveal {
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@utility reveal-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -95,5 +144,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Reduced motion must not mean "never appears". */
+  .reveal-hidden {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

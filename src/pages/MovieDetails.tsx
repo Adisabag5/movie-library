@@ -43,7 +43,7 @@ const MovieDetails = () => {
           <h1 className="text-4xl font-black tracking-tight text-ink">{movie.title}</h1>
 
           {movie.tagline && (
-            <p className="text-lg italic text-clay-deep">{movie.tagline}</p>
+            <p className="text-lg italic text-accent-deep">{movie.tagline}</p>
           )}
 
           <ul className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ const MovieDetails = () => {
           </ul>
 
           <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink-soft">
-            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-bold text-ink">
+            <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-bold text-ink">
               ★ {movie.vote_average.toFixed(1)}
             </span>
             {movie.release_date.slice(0, 4)} · {movie.runtime} min

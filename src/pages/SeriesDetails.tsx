@@ -43,7 +43,7 @@ const SeriesDetails = () => {
           <h1 className="text-4xl font-black tracking-tight text-ink">{series.name}</h1>
 
           {series.tagline && (
-            <p className="text-lg italic text-clay-deep">{series.tagline}</p>
+            <p className="text-lg italic text-accent-deep">{series.tagline}</p>
           )}
 
           <ul className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ const SeriesDetails = () => {
           </ul>
 
           <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink-soft">
-            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-bold text-ink">
+            <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-bold text-ink">
               ★ {series.vote_average.toFixed(1)}
             </span>
             {series.first_air_date.slice(0, 4)} · {series.number_of_seasons}{' '}

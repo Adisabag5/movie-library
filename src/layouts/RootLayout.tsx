@@ -1,6 +1,7 @@
 import { Outlet, ScrollRestoration, useNavigation } from 'react-router-dom'
 import Toolbar from '../components/Toolbar'
 import Footer from '../components/Footer'
+import PageTransition from '../components/motion/PageTransition'
 
 const RootLayout = () => {
   const navigation = useNavigation()
@@ -13,7 +14,7 @@ const RootLayout = () => {
             <div
                 role="progressbar"
                 aria-label="Loading page"
-                className="fixed inset-x-0 top-0 z-[60] h-1 animate-drift bg-[linear-gradient(110deg,var(--color-clay),var(--color-marigold),var(--color-clay))] bg-[length:200%_100%]"
+                className="fixed inset-x-0 top-0 z-[60] h-1 animate-drift bg-[linear-gradient(110deg,var(--color-accent),var(--color-accent-soft),var(--color-accent))] bg-[length:200%_100%]"
             />
         )}
 
@@ -25,7 +26,9 @@ const RootLayout = () => {
 
         <main aria-busy={isNavigating} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6">
              <ScrollRestoration />
-             <Outlet />
+             <PageTransition>
+                 <Outlet />
+             </PageTransition>
         </main>
 
         <Footer />

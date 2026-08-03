@@ -21,7 +21,7 @@ const BackButton = ({ fallback, label }: BackButtonProps) => {
         <button
             type="button"
             onClick={goBack}
-            className="group mb-6 inline-flex items-center gap-2 rounded-full bg-sand px-4 py-2 text-sm font-semibold text-ink-soft ring-1 ring-bark/50 transition-all duration-300 hover:-translate-x-0.5 hover:bg-clay hover:text-paper hover:ring-clay focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+            className="group mb-6 inline-flex items-center gap-2 rounded-full bg-sand px-4 py-2 text-sm font-semibold text-ink-soft ring-1 ring-bark/50 transition-all duration-300 hover:-translate-x-0.5 hover:bg-accent hover:text-paper hover:ring-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
             <span aria-hidden="true" className="transition-transform duration-300 group-hover:-translate-x-1">
                 ←

@@ -4,6 +4,7 @@ import SearchInput from '../components/filters/SearchInput';
 import Pagination from '../components/Pagination';
 import PosterGrid from '../components/PosterGrid';
 import { GridSkeleton } from '../components/Skeletons';
+import Reveal from '../components/motion/Reveal';
 import { toDiscoverQuery } from '../core/discoverParams';
 import { buildFilterFields } from '../core/filters';
 import { MAX_PAGES } from '../core/http';
@@ -63,7 +64,9 @@ const Movies = () => {
 
       {!isPending && (
         <>
-          <PosterGrid list={data.results} dimmed={isPlaceholderData} />
+          <Reveal>
+            <PosterGrid list={data.results} dimmed={isPlaceholderData} />
+          </Reveal>
 
           <Pagination
             page={data.page}

@@ -11,7 +11,7 @@ const SelectionTick = ({ checked, round }: SelectionTickProps) => (
         aria-hidden="true"
         className={`flex h-4 w-4 shrink-0 items-center justify-center border-2 transition-all duration-200 ${
             round ? 'rounded-full' : 'rounded-[0.3rem]'
-        } ${checked ? 'border-clay bg-clay' : 'border-bark bg-paper'}`}
+        } ${checked ? 'border-accent bg-accent' : 'border-bark bg-paper'}`}
     >
         {round ? (
             <span

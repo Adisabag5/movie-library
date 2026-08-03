@@ -32,7 +32,7 @@ const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
 export const OfflineBanner = () => (
     <p
         role="status"
-        className="animate-fade-up rounded-2xl border border-marigold/60 bg-marigold/15 px-4 py-3 text-sm font-medium text-clay-deep"
+        className="animate-fade-up rounded-2xl border border-accent-soft/60 bg-accent-soft/15 px-4 py-3 text-sm font-medium text-accent-deep"
     >
         You appear to be offline. Showing the most recent data — this will update as soon as you reconnect.
     </p>

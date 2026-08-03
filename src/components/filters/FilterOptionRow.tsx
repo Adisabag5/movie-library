@@ -34,8 +34,8 @@ const FilterOptionRow = ({
             className="peer sr-only"
         />
         <span
-            className={`flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-clay ${
-                checked ? 'bg-clay/10 text-clay-deep' : 'text-ink-soft hover:bg-sand'
+            className={`flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent ${
+                checked ? 'bg-accent/10 text-accent-deep' : 'text-ink-soft hover:bg-sand'
             }`}
         >
             <SelectionTick checked={checked} round={!multiple} />

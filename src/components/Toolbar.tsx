@@ -5,10 +5,10 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
     'relative block rounded-full px-3.5 py-1.5 text-sm font-semibold tracking-tight',
     'transition-all duration-300 ease-out',
-    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
     isActive
-      ? 'bg-[linear-gradient(110deg,var(--color-clay),var(--color-marigold),var(--color-clay))] bg-[length:200%_100%] animate-drift text-paper shadow-sm shadow-clay/30'
-      : 'text-ink-soft hover:-translate-y-0.5 hover:bg-sand hover:text-clay',
+      ? 'bg-[linear-gradient(110deg,var(--color-accent),var(--color-accent-soft),var(--color-accent))] bg-[length:200%_100%] animate-drift text-paper shadow-sm shadow-accent/30'
+      : 'text-ink-soft hover:-translate-y-0.5 hover:bg-sand hover:text-accent',
   ].join(' ')
 
 const Toolbar = () => {
@@ -16,7 +16,7 @@ const Toolbar = () => {
     <nav className="flex items-center justify-between gap-4">
       <Link
         to="/"
-        className="group flex items-center gap-2.5 rounded-full transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+        className="group flex items-center gap-2.5 rounded-full transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
 
         <LogoDark
@@ -25,7 +25,7 @@ const Toolbar = () => {
         />
         <span className="hidden text-lg font-black tracking-tight text-ink sm:inline">
           Movie
-          <span className="text-clay transition-colors duration-300 group-hover:text-marigold">
+          <span className="text-accent transition-colors duration-300 group-hover:text-accent-soft">
             Library
           </span>
         </span>

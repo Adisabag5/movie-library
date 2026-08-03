@@ -70,19 +70,19 @@ const FilterDropdown = ({ field, value, onChange, disabled = false }: FilterDrop
                 aria-controls={panelId}
                 disabled={disabled}
                 onClick={() => setOpen((previous) => !previous)}
-                className={`relative h-9 w-full truncate rounded-lg border bg-paper py-0 pl-3 pr-8 text-left text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay disabled:cursor-not-allowed ${
+                className={`relative h-9 w-full truncate rounded-lg border bg-paper py-0 pl-3 pr-8 text-left text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed ${
                     disabled ? 'border-bark text-ink-soft' : 'cursor-pointer'
                 } ${
                     isActive && !disabled
-                        ? 'border-clay text-clay-deep'
+                        ? 'border-accent text-accent-deep'
                         : !disabled
-                          ? 'border-bark text-ink-soft hover:border-clay hover:text-clay'
+                          ? 'border-bark text-ink-soft hover:border-accent hover:text-accent'
                           : ''
                 }`}
             >
                 {summary}
                 <Chevron
-                    className={`pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-clay transition-transform duration-200 ${
+                    className={`pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-accent transition-transform duration-200 ${
                         open ? 'rotate-180' : ''
                     }`}
                 />

@@ -18,9 +18,9 @@ const PosterCard = ({ item, className = '', style }: PosterCardProps) => {
         <div className={`group relative ${className}`} style={style}>
             <Link
                 to={detailsPath(item)}
-                className="block rounded-xl transition-transform duration-300 ease-out hover:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+                className="block rounded-xl transition-transform duration-300 ease-out hover:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-                <div className="overflow-hidden rounded-xl bg-sand shadow-md shadow-ink/10 ring-1 ring-bark/40 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-clay/25">
+                <div className="overflow-hidden rounded-xl bg-sand shadow-md shadow-ink/10 ring-1 ring-bark/40 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-accent/25">
                     <img
                         src={imageUrl(item.poster_path)}
                         alt={displayName(item)}
@@ -28,7 +28,7 @@ const PosterCard = ({ item, className = '', style }: PosterCardProps) => {
                         className="aspect-[2/3] w-full object-cover brightness-95 saturate-[0.95] transition-all duration-500 ease-out group-hover:scale-[1.06] group-hover:brightness-110 group-hover:saturate-110"
                     />
                 </div>
-                <p className="mt-2 truncate text-sm font-semibold text-ink-soft transition-colors duration-300 group-hover:text-clay">
+                <p className="mt-2 truncate text-sm font-semibold text-ink-soft transition-colors duration-300 group-hover:text-accent">
                     {displayName(item)}
                 </p>
             </Link>
@@ -43,10 +43,10 @@ const PosterCard = ({ item, className = '', style }: PosterCardProps) => {
                 }
                 title={inCollection ? 'Remove from collection' : 'Add to collection'}
                 onClick={() => toggle(item)}
-                className={`absolute right-2 top-2 rounded-full p-2 leading-none shadow-lg transition-all duration-300 hover:scale-110 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marigold ${
+                className={`absolute right-2 top-2 rounded-full p-2 leading-none shadow-lg transition-all duration-300 hover:scale-110 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-soft ${
                     inCollection
-                        ? 'bg-marigold text-ink opacity-100 shadow-marigold/40'
-                        : 'bg-paper/85 text-ink opacity-0 shadow-ink/25 backdrop-blur-sm hover:bg-clay hover:text-paper group-hover:opacity-100 [@media(hover:none)]:opacity-100'
+                        ? 'bg-accent-soft text-ink opacity-100 shadow-accent-soft/40'
+                        : 'bg-paper/85 text-ink opacity-0 shadow-ink/25 backdrop-blur-sm hover:bg-accent hover:text-paper group-hover:opacity-100 [@media(hover:none)]:opacity-100'
                 }`}
             >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
