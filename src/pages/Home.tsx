@@ -1,6 +1,7 @@
 import Hero from '../components/Hero';
 import HorizontalList from '../components/HorizontalList';
 import { OfflineBanner } from '../components/ErrorMessage';
+import QueryState from '../components/QueryState';
 import { HeroSkeleton, RowSkeleton } from '../components/Skeletons';
 import Reveal from '../components/motion/Reveal';
 import {
@@ -14,12 +15,11 @@ const Home = () => {
   const topRatedMovies = useTopRatedMovies();
   const popularSeries = usePopularSeries();
 
+  // Being offline is a property of the page, not of each row — so it is
+  // announced once, ABOVE the content, and never instead of it. Whatever any
+  // row already has stays on screen.
   const isPaused =
     popularMovies.isPaused || topRatedMovies.isPaused || popularSeries.isPaused;
-
-  if (isPaused) {
-    return <OfflineBanner />;
-  }
 
   return (
     <div className="space-y-10">
@@ -31,46 +31,58 @@ const Home = () => {
           headings start at h2. sr-only keeps the outline intact. */}
       <h1 className="sr-only">Movie Library — browse popular films and series</h1>
 
-      <Reveal>
-        {
-          popularMovies?.isPending ?
-            <HeroSkeleton /> :
-              popularMovies.isError ?
-                <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
-                  <Hero movies={popularMovies.data} />
-        }
-      </Reveal>
+      {isPaused && <OfflineBanner />}
 
-      <Reveal>
-        {
-          popularMovies?.isPending ?
-            <RowSkeleton /> :
-              popularMovies.isError ?
-                  <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
-                    <HorizontalList title="Movies" list={popularMovies.data} />
-        }
-      </Reveal>
+      {/* Each section resolves on its own. There is deliberately no aggregate
+          isPending/isError/isPaused across the three queries: one slow or
+          failing request must not blank the other two. */}
+      <QueryState
+        query={popularMovies}
+        skeleton={<HeroSkeleton />}
+        errorMessage="Could not load the featured film."
+      >
+        {(movies) => (
+          <Reveal>
+            <Hero movies={movies} />
+          </Reveal>
+        )}
+      </QueryState>
 
-      <Reveal delay={80}>
-        {
-          popularSeries?.isPending ?
-            <RowSkeleton /> :
-                popularSeries.isError ?
-                  <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load series. Please try again later.</p> :
-                    <HorizontalList title="Series" list={popularSeries.data} />
-        }
-      </Reveal>
+      <QueryState
+        query={popularMovies}
+        skeleton={<RowSkeleton />}
+        errorMessage="Could not load movies."
+      >
+        {(movies) => (
+          <Reveal>
+            <HorizontalList title="Movies" list={movies} />
+          </Reveal>
+        )}
+      </QueryState>
 
-      <Reveal delay={160}>
-        {
-          topRatedMovies?.isPending ?
-            <RowSkeleton /> :
-                topRatedMovies.isError ?
-                  <p className="rounded-2xl bg-sand/70 p-8 text-center font-semibold text-oxblood ring-1 ring-bark/50"> Could not load movies. Please try again later.</p> :
-                    <HorizontalList title="Top Rated" list={topRatedMovies.data} />
-        }
-      </Reveal>
+      <QueryState
+        query={popularSeries}
+        skeleton={<RowSkeleton />}
+        errorMessage="Could not load series."
+      >
+        {(series) => (
+          <Reveal delay={80}>
+            <HorizontalList title="Series" list={series} />
+          </Reveal>
+        )}
+      </QueryState>
 
+      <QueryState
+        query={topRatedMovies}
+        skeleton={<RowSkeleton />}
+        errorMessage="Could not load top rated movies."
+      >
+        {(movies) => (
+          <Reveal delay={160}>
+            <HorizontalList title="Top Rated" list={movies} />
+          </Reveal>
+        )}
+      </QueryState>
     </div>
   );
 };

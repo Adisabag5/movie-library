@@ -46,14 +46,14 @@ const Movies = () => {
       <h1 className="text-2xl font-bold tracking-tight">Movies</h1>
 
       <div className="flex flex-wrap items-center gap-2">
-        <SearchInput value={term} onChange={setTerm} placeholder="Search movies" isBusy={isPending} />
+        <SearchInput value={term} onChange={setTerm} placeholder="Search movies" isBusy={isPlaceholderData} />
 
         <FilterBar
           values={values}
           onChange={setFilter}
           fields={fields}
           onReset={reset}
-          isBusy={isPending}
+          isBusy={isPlaceholderData}
           isDisabled={isSearching}
           disabledHint="Filters are unavailable while searching"
         />

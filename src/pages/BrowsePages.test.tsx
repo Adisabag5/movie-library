@@ -3,146 +3,264 @@ import { screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Movies from './Movies'
 import Series from './Series'
-import { makeMovie, makePage, makeSeries, renderWithProviders } from '../test/utils'
+import { LocationProbe } from '../test/LocationProbe'
+import {
+    currentUrl,
+    makeMovie,
+    makePage,
+    makeSeries,
+    renderWithProviders,
+    stubTmdb,
+} from '../test/utils'
 
-// Ported from the old BrowsePage suite when that component was dissolved into
-// the two pages. The behaviours are the same; they are now asserted through
-// the real query layer with only fetch faked.
+// The browse pages are where filters, search, pagination and the endpoint
+// switch all meet, so this suite drives the real query layer with only fetch
+// faked. Asserting on the request URL is the point: that is the seam where
+// filters silently stopped working before.
 
-let fetchMock: ReturnType<typeof vi.fn>
-let body: unknown
-let status = 200
+let tmdb: ReturnType<typeof stubTmdb>
 
 beforeEach(() => {
-  status = 200
-  body = makePage([makeMovie({ title: 'Sicario' })])
-  fetchMock = vi.fn(() =>
-    Promise.resolve(new Response(JSON.stringify(body), { status }))
-  )
-  vi.stubGlobal('fetch', fetchMock)
+    tmdb = stubTmdb(makePage([makeMovie({ title: 'Sicario' })]))
 })
 
 afterEach(() => {
-  vi.unstubAllGlobals()
+    vi.unstubAllGlobals()
 })
 
-describe('Movies', () => {
-  it('shows the heading and the grid once data arrives', async () => {
-    renderWithProviders(<Movies />, { route: '/movies' })
+const openMovies = (route = '/movies') =>
+    renderWithProviders(
+        <>
+            <Movies />
+            <LocationProbe />
+        </>,
+        { route }
+    )
 
-    expect(await screen.findByRole('link', { name: /sicario/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Movies' })).toBeInTheDocument()
-  })
+const pickGenre = async (user: ReturnType<typeof openMovies>['user'], name: string) => {
+    await user.click(screen.getByRole('button', { name: 'Genre' }))
+    await user.click(screen.getByRole('checkbox', { name }))
+}
 
-  it('renders no grid or pager while the first page loads', () => {
-    renderWithProviders(<Movies />, { route: '/movies' })
+describe('Movies — listing', () => {
+    it('renders the grid once data arrives', async () => {
+        openMovies()
 
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
-    expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
-  })
-
-  it('shows an error with a working retry instead of the grid', async () => {
-    status = 500
-
-    const { user } = renderWithProviders(<Movies />, { route: '/movies' })
-
-    expect(
-      await screen.findByText(/could not load movies/i)
-    ).toBeInTheDocument()
-
-    fetchMock.mockClear()
-    await user.click(screen.getByRole('button', { name: /try again/i }))
-
-    expect(fetchMock).toHaveBeenCalled()
-  })
-
-  // Under keepPreviousData the grid can still be showing the previous page,
-  // so the label must describe what is on screen — not the page the URL asked
-  // for.
-  it('labels the pager from the data on screen, not the URL', async () => {
-    body = makePage([makeMovie()], { page: 4, total_pages: 20 })
-
-    renderWithProviders(<Movies />, { route: '/movies?page=9' })
-
-    expect(await screen.findByText('Page 4 of 20')).toBeInTheDocument()
-  })
-
-  it('caps total pages at the TMDB maximum', async () => {
-    body = makePage([makeMovie()], { page: 1, total_pages: 4000 })
-
-    renderWithProviders(<Movies />, { route: '/movies' })
-
-    expect(await screen.findByText('Page 1 of 500')).toBeInTheDocument()
-  })
-
-  it('requests the next page when the pager advances', async () => {
-    body = makePage([makeMovie()], { page: 2, total_pages: 9 })
-
-    const { user } = renderWithProviders(<Movies />, { route: '/movies?page=2' })
-
-    await screen.findByText('Page 2 of 9')
-    fetchMock.mockClear()
-
-    await user.click(screen.getByRole('button', { name: /next/i }))
-
-    await waitFor(() => {
-      const urls = fetchMock.mock.calls.map((call) => String(call[0]))
-      expect(urls.some((url) => url.includes('page=3'))).toBe(true)
+        expect(await screen.findByRole('link', { name: /sicario/i })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Movies' })).toBeInTheDocument()
     })
-  })
 
-  it('reads the starting page from the query string', async () => {
-    renderWithProviders(<Movies />, { route: '/movies?page=5' })
+    it('offers a retry instead of a dead end when the request fails', async () => {
+        tmdb.failWith(500)
+        const { user } = openMovies()
 
-    await waitFor(() => {
-      const urls = fetchMock.mock.calls.map((call) => String(call[0]))
-      expect(urls.some((url) => url.includes('page=5'))).toBe(true)
+        expect(await screen.findByText(/could not load movies/i)).toBeInTheDocument()
+
+        tmdb.fetchMock.mockClear()
+        await user.click(screen.getByRole('button', { name: /try again/i }))
+
+        expect(tmdb.fetchMock).toHaveBeenCalled()
     })
-  })
 
-  it('banners an offline pause rather than an endless skeleton', async () => {
-    onlineManager.setOnline(false)
+    it('banners an offline pause rather than an endless skeleton', async () => {
+        onlineManager.setOnline(false)
+        try {
+            openMovies()
+            await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(/offline/i))
+        } finally {
+            onlineManager.setOnline(true)
+        }
+    })
 
-    try {
-      renderWithProviders(<Movies />, { route: '/movies' })
+    it('renders a placeholder rather than a broken image when a poster is missing', async () => {
+        tmdb.respondWith(makePage([makeMovie({ title: 'No Art', poster_path: null })]))
+        openMovies()
 
-      await waitFor(() => {
-        expect(screen.getByRole('status')).toHaveTextContent(/offline/i)
-      })
-    } finally {
-      onlineManager.setOnline(true)
-    }
-  })
+        const poster = await screen.findByRole('img', { name: 'No Art' })
+        expect(poster).toHaveAttribute('src', expect.stringContaining('data:image/svg+xml'))
+    })
+})
+
+describe('Movies — pagination', () => {
+    // Under keepPreviousData the grid can still be showing the previous page,
+    // so the label has to describe the data on screen, not the URL.
+    it('labels the pager from the data on screen, not the URL', async () => {
+        tmdb.respondWith(makePage([makeMovie()], { page: 4, total_pages: 20 }))
+        openMovies('/movies?page=9')
+
+        expect(await screen.findByText('Page 4 of 20')).toBeInTheDocument()
+    })
+
+    // TMDB rejects anything past 500 even when total_pages says otherwise.
+    it('caps the pager at the TMDB maximum', async () => {
+        tmdb.respondWith(makePage([makeMovie()], { page: 1, total_pages: 4000 }))
+        openMovies()
+
+        expect(await screen.findByText('Page 1 of 500')).toBeInTheDocument()
+    })
+
+    it('requests the page named in the URL, and the next one on demand', async () => {
+        tmdb.respondWith(makePage([makeMovie()], { page: 2, total_pages: 9 }))
+        const { user } = openMovies('/movies?page=2')
+
+        await screen.findByText('Page 2 of 9')
+        expect(tmdb.calledWith('page=2')).toBe(true)
+
+        await user.click(screen.getByRole('button', { name: /next page/i }))
+
+        await waitFor(() => expect(tmdb.calledWith('page=3')).toBe(true))
+    })
+})
+
+describe('Movies — filters', () => {
+    it('moves from /popular to /discover when a filter is applied', async () => {
+        const { user } = openMovies()
+        await screen.findByRole('link', { name: /sicario/i })
+        expect(tmdb.lastUrl()).toContain('/movie/popular')
+
+        await pickGenre(user, 'Horror')
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('/discover/movie'))
+        expect(tmdb.lastUrl()).toContain('with_genres=27')
+    })
+
+    it('puts the filter in the URL so the view can be shared', async () => {
+        const { user } = openMovies()
+        await screen.findByRole('link', { name: /sicario/i })
+
+        await pickGenre(user, 'Horror')
+
+        await waitFor(() => expect(currentUrl()).toContain('genre=27'))
+    })
+
+    it('restores the filter from a shared URL', async () => {
+        openMovies('/movies?genre=27&rating=8')
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('with_genres=27'))
+        expect(tmdb.lastUrl()).toContain('vote_average.gte=8')
+        expect(screen.getByRole('button', { name: 'Rating' })).toHaveTextContent('8+ Great')
+    })
+
+    // A checkbox list reads as "any of these"; a comma would mean AND and make
+    // every extra tick shrink the results.
+    it('OR-joins several genres rather than AND-joining them', async () => {
+        const { user } = openMovies('/movies?genre=27')
+        await screen.findByRole('link', { name: /sicario/i })
+
+        await pickGenre(user, 'Drama')
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('with_genres=27|18'))
+    })
+
+    it('maps duration and year to their TMDB parameters', async () => {
+        openMovies('/movies?duration=90-120&year=2020')
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('with_runtime.gte=90'))
+        expect(tmdb.lastUrl()).toContain('with_runtime.lte=120')
+        expect(tmdb.lastUrl()).toContain('primary_release_year=2020')
+    })
+
+    // Filtering to two pages while the URL still says page 7 asks for a page
+    // that does not exist and renders an empty grid.
+    it('resets the page when a filter changes', async () => {
+        const { user } = openMovies('/movies?page=7')
+        await screen.findByRole('link', { name: /sicario/i })
+
+        await pickGenre(user, 'Horror')
+
+        await waitFor(() => expect(currentUrl()).not.toContain('page=7'))
+    })
+
+    it('clears every filter from the URL on reset', async () => {
+        const { user } = openMovies('/movies?genre=27&rating=8')
+        await screen.findByRole('link', { name: /sicario/i })
+
+        await user.click(screen.getByRole('button', { name: /clear all filters/i }))
+
+        await waitFor(() => expect(currentUrl()).not.toContain('genre='))
+        expect(currentUrl()).not.toContain('rating=')
+    })
+})
+
+describe('Movies — search', () => {
+    // Typing must not fire a request per keystroke.
+    it('debounces typing into a single /search request', async () => {
+        const { user } = openMovies()
+        await screen.findByRole('link', { name: /sicario/i })
+        tmdb.fetchMock.mockClear()
+
+        await user.type(screen.getByRole('searchbox'), 'batman')
+
+        await waitFor(() => expect(tmdb.calledWith('/search/movie')).toBe(true))
+        expect(tmdb.urls().filter((url) => url.includes('/search/movie'))).toHaveLength(1)
+        expect(tmdb.lastUrl()).toContain('query=batman')
+    })
+
+    // TMDB cannot honour a text query and discover filters in one request, so
+    // the filters are turned off and the reason is stated.
+    it('disables the filters while searching and explains why', async () => {
+        openMovies('/movies?q=batman')
+
+        await waitFor(() =>
+            expect(screen.getByRole('status')).toHaveTextContent(/unavailable while searching/i)
+        )
+        expect(screen.getByRole('button', { name: 'Genre' })).toHaveAttribute(
+            'aria-disabled',
+            'true'
+        )
+    })
+
+    it('ignores filters while a search is active, and restores them after', async () => {
+        const { user } = openMovies('/movies?q=batman&genre=27')
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('/search/movie'))
+        expect(tmdb.lastUrl()).not.toContain('with_genres')
+
+        await user.click(screen.getByRole('button', { name: /clear search/i }))
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('/discover/movie'))
+        expect(tmdb.lastUrl()).toContain('with_genres=27')
+    })
 })
 
 describe('Series', () => {
-  it('renders its own heading and grid', async () => {
-    body = makePage([makeSeries({ name: 'The Wire' })])
-
-    renderWithProviders(<Series />, { route: '/series' })
-
-    expect(await screen.findByRole('link', { name: /the wire/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Series' })).toBeInTheDocument()
-  })
-
-  it('hits the tv endpoint, not the movie one', async () => {
-    body = makePage([makeSeries()])
-
-    renderWithProviders(<Series />, { route: '/series' })
-
-    await waitFor(() => {
-      const urls = fetchMock.mock.calls.map((call) => String(call[0]))
-      expect(urls.some((url) => url.includes('/tv/'))).toBe(true)
+    beforeEach(() => {
+        tmdb.respondWith(makePage([makeSeries({ name: 'The Wire' })]))
     })
-  })
 
-  // The copy-paste bug this codebase has actually had: the series page
-  // reporting "Could not load movies".
-  it('reports failures with the series wording', async () => {
-    status = 500
+    const openSeries = (route = '/series') =>
+        renderWithProviders(
+            <>
+                <Series />
+                <LocationProbe />
+            </>,
+            { route }
+        )
 
-    renderWithProviders(<Series />, { route: '/series' })
+    it('renders its own grid from the tv endpoint', async () => {
+        openSeries()
 
-    expect(await screen.findByText(/could not load series/i)).toBeInTheDocument()
-  })
+        expect(await screen.findByRole('link', { name: /the wire/i })).toBeInTheDocument()
+        expect(tmdb.lastUrl()).toContain('/tv/popular')
+    })
+
+    // Movie and TV genre ids are different namespaces — sending 28 (movie
+    // Action) to /discover/tv returns nothing at all.
+    it('offers TV genre ids, not movie ones', async () => {
+        const { user } = openSeries()
+        await screen.findByRole('link', { name: /the wire/i })
+
+        await user.click(screen.getByRole('button', { name: 'Genre' }))
+        await user.click(screen.getByRole('checkbox', { name: 'Action & Adventure' }))
+
+        await waitFor(() => expect(tmdb.lastUrl()).toContain('with_genres=10759'))
+        expect(tmdb.lastUrl()).toContain('/discover/tv')
+    })
+
+    it('reports failures with the series wording, not the movie wording', async () => {
+        tmdb.failWith(500)
+        openSeries()
+
+        expect(await screen.findByText(/could not load series/i)).toBeInTheDocument()
+    })
 })

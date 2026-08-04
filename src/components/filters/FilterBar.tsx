@@ -1,12 +1,12 @@
 import FilterDropdown from './FilterDropdown'
 import ResetFiltersButton from './ResetFiltersButton'
-import { isActive } from '../../core/util'
-import type { FilterField, FilterValue } from '../../types/filters'
+import { isActive } from '../../core/filterValues'
+import type { FilterField, FilterValue, FilterValues } from '../../types/filters'
 
-export interface FilterBarProps {
-    fields: FilterField[]
-    values: Record<string, FilterValue>
-    onChange: (name: string, value: FilterValue) => void
+export interface FilterBarProps<Name extends string = string> {
+    fields: FilterField<Name>[]
+    values: FilterValues<Name>
+    onChange: (name: Name, value: FilterValue) => void
     onReset?: () => void
     isBusy?: boolean
     /**
@@ -19,7 +19,7 @@ export interface FilterBarProps {
     disabledHint?: string
 }
 
-const FilterBar = ({
+const FilterBar = <Name extends string>({
     fields,
     values,
     onChange,
@@ -27,7 +27,7 @@ const FilterBar = ({
     isBusy = false,
     isDisabled = false,
     disabledHint,
-}: FilterBarProps) => {
+}: FilterBarProps<Name>) => {
     const activeCount = fields.filter((field) => isActive(values[field.name] ?? null)).length
 
     return (

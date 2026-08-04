@@ -1,11 +1,47 @@
 import type { ReactElement, ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+import { vi } from 'vitest'
 import type { Movie, MovieDetails } from '../types/movie'
 import type { Series, SeriesDetails } from '../types/series'
 import type { Paginated } from '../types/api'
+
+export const currentUrl = () => decodeURIComponent(screen.getByTestId('url').textContent ?? '')
+
+/**
+ * Replaces fetch and records what the app asked TMDB for. Asserting on the
+ * request URL is what proves the filter/search plumbing end to end — it is the
+ * layer where the endpoint bug and the genre-encoding bug both lived.
+ */
+export function stubTmdb(body: unknown = null) {
+  let responseBody = body
+  let status = 200
+
+  const fetchMock = vi.fn((_url: string) =>
+    Promise.resolve(new Response(JSON.stringify(responseBody), { status }))
+  )
+  vi.stubGlobal('fetch', fetchMock)
+
+  const urls = () =>
+    fetchMock.mock.calls.map((call) =>
+      decodeURIComponent(String(call[0]).replace('https://api.themoviedb.org/3', ''))
+    )
+
+  return {
+    fetchMock,
+    urls,
+    lastUrl: () => urls().at(-1) ?? '',
+    calledWith: (fragment: string) => urls().some((url) => url.includes(fragment)),
+    respondWith: (next: unknown) => {
+      responseBody = next
+    },
+    failWith: (nextStatus: number) => {
+      status = nextStatus
+    },
+  }
+}
 
 export function createTestQueryClient() {
   return new QueryClient({

@@ -19,8 +19,6 @@ const Series = () => {
   const { values, setFilter, reset } = useFilterParams({ fields });
   const { term, setTerm } = useSearchTerm();
 
-  // Searching and filtering are mutually exclusive on TMDB, so the filter
-  // query is dropped while a term is present rather than sent and ignored.
   const isSearching = term !== '';
 
   const { data, isPending, isError, isPaused, isPlaceholderData, refetch } = useSeriesPage(
@@ -46,14 +44,14 @@ const Series = () => {
       <h1 className="text-2xl font-bold tracking-tight">Series</h1>
 
       <div className="flex flex-wrap items-center gap-2">
-        <SearchInput value={term} onChange={setTerm} placeholder="Search series" isBusy={isPending} />
+        <SearchInput value={term} onChange={setTerm} placeholder="Search series" isBusy={isPlaceholderData} />
 
         <FilterBar
           values={values}
           onChange={setFilter}
           fields={fields}
           onReset={reset}
-          isBusy={isPending}
+          isBusy={isPlaceholderData}
           isDisabled={isSearching}
           disabledHint="Filters are unavailable while searching"
         />

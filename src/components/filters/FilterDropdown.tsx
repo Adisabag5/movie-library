@@ -8,7 +8,7 @@ import {
     toArray,
     toggleValue,
     toSingle,
-} from '../../core/util'
+} from '../../core/filterValues'
 import { useDismiss } from '../../hooks/useDismiss'
 import type { FilterField, FilterValue } from '../../types/filters'
 
@@ -68,8 +68,15 @@ const FilterDropdown = ({ field, value, onChange, disabled = false }: FilterDrop
                 aria-label={field.label}
                 aria-expanded={open}
                 aria-controls={panelId}
-                disabled={disabled}
-                onClick={() => setOpen((previous) => !previous)}
+                // aria-disabled rather than `disabled`: a disabled button is
+                // removed from the tab order, so a keyboard user searching
+                // could never reach the control to find out why it is off.
+                // This keeps it focusable and announced, and blocks the action.
+                aria-disabled={disabled}
+                onClick={() => {
+                    if (disabled) return
+                    setOpen((previous) => !previous)
+                }}
                 className={`relative h-9 w-full truncate rounded-lg border bg-paper py-0 pl-3 pr-8 text-left text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed ${
                     disabled ? 'border-bark text-ink-soft' : 'cursor-pointer'
                 } ${

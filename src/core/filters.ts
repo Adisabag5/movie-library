@@ -96,19 +96,32 @@ export function yearOptions(span = 50): FilterOption[] {
  * duration and year each map to a single parameter or range, so offering
  * multiple values would produce a query the API cannot express.
  */
-export function buildFilterFields(kind: MediaKind): FilterField[] {
-    return [
-        { name: 'rating', label: 'Rating', options: RATING_OPTIONS },
-        { name: 'duration', label: 'Duration', options: DURATION_OPTIONS },
-        { name: 'year', label: 'Year', options: yearOptions() },
-        {
-            name: 'genre',
-            label: 'Genre',
-            multiple: true,
-            options: kind === 'movie' ? MOVIE_GENRES : TV_GENRES,
-        },
-    ]
+export const FILTER_NAMES = ['rating', 'duration', 'year', 'genre'] as const
+
+/** The query-string keys these fields own. */
+export type FilterName = (typeof FILTER_NAMES)[number]
+
+const fieldsFor = (kind: MediaKind): FilterField<FilterName>[] => [
+    { name: 'rating', label: 'Rating', options: RATING_OPTIONS },
+    { name: 'duration', label: 'Duration', options: DURATION_OPTIONS },
+    { name: 'year', label: 'Year', options: yearOptions() },
+    {
+        name: 'genre',
+        label: 'Genre',
+        multiple: true,
+        options: kind === 'movie' ? MOVIE_GENRES : TV_GENRES,
+    },
+]
+
+// Built once at module load rather than per render. Calling this from a
+// component body re-created 50 year options and a fresh array identity on
+// every keystroke, which also defeated any memoisation downstream. The result
+// depends only on `kind`, so there are exactly two of them.
+const FIELDS: Record<MediaKind, FilterField<FilterName>[]> = {
+    movie: fieldsFor('movie'),
+    tv: fieldsFor('tv'),
 }
 
-/** The query-string keys these fields own — hand this to useFilterParams. */
-export const FILTER_KEYS = ['rating', 'duration', 'year', 'genre']
+export function buildFilterFields(kind: MediaKind): FilterField<FilterName>[] {
+    return FIELDS[kind]
+}

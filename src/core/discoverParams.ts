@@ -1,6 +1,6 @@
-import { toArray, toSingle } from './util'
-import type { MediaKind } from './filters'
-import type { FilterValue } from '../types/filters'
+import { toArray, toSingle } from './filterValues'
+import type { FilterName, MediaKind } from './filters'
+import type { FilterValues } from '../types/filters'
 
 /**
  * Ticking several genres reads as "any of these", so they are OR-joined.
@@ -19,7 +19,7 @@ const GENRE_SEPARATOR = '|'
  * request needs stay with the fetcher.
  */
 export function toDiscoverQuery(
-    values: Record<string, FilterValue>,
+    values: FilterValues<FilterName>,
     kind: MediaKind
 ): string {
     const params = new URLSearchParams()

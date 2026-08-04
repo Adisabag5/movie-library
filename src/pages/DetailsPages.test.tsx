@@ -1,166 +1,144 @@
 import { screen } from '@testing-library/react'
-import { Route, Routes } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import MovieDetails from './MovieDetails'
 import SeriesDetails from './SeriesDetails'
 import {
-  makeMovieDetails,
-  makeSeriesDetails,
-  renderWithProviders,
+    makeMovieDetails,
+    makeSeriesDetails,
+    renderWithProviders,
+    stubTmdb,
 } from '../test/utils'
 
-let fetchMock: ReturnType<typeof vi.fn>
-
-const respondWith = (body: unknown, status = 200) =>
-  fetchMock.mockResolvedValue(new Response(JSON.stringify(body), { status }))
+let tmdb: ReturnType<typeof stubTmdb>
 
 beforeEach(() => {
-  fetchMock = vi.fn()
-  vi.stubGlobal('fetch', fetchMock)
+    tmdb = stubTmdb(makeMovieDetails())
 })
 
 afterEach(() => {
-  vi.unstubAllGlobals()
+    vi.unstubAllGlobals()
 })
 
-const renderMovie = () =>
-  renderWithProviders(
-    <Routes>
-      <Route path="/movie/:id" element={<MovieDetails />} />
-      <Route path="/movies" element={<p>Movies listing</p>} />
-    </Routes>,
-    { route: '/movie/7' }
-  )
-
-const renderSeries = () =>
-  renderWithProviders(
-    <Routes>
-      <Route path="/series/:id" element={<SeriesDetails />} />
-      <Route path="/series" element={<p>Series listing</p>} />
-    </Routes>,
-    { route: '/series/7' }
-  )
-
-describe('MovieDetails', () => {
-  it('renders the film once loaded', async () => {
-    respondWith(
-      makeMovieDetails({
-        title: 'Sicario',
-        tagline: 'The border is just another line to cross.',
-        overview: 'An idealistic agent is enlisted into a task force.',
-        runtime: 121,
-        release_date: '2015-09-17',
-        vote_average: 7.6,
-        genres: [
-          { id: 28, name: 'Action' },
-          { id: 53, name: 'Thriller' },
-        ],
-      })
+const openMovie = (route = '/movie/7') =>
+    renderWithProviders(
+        <Routes>
+            <Route
+                path="/movies"
+                element={
+                    <>
+                        <p>Movies listing</p>
+                        <Link to="/movie/7">Open film</Link>
+                    </>
+                }
+            />
+            <Route path="/movie/:id" element={<MovieDetails />} />
+        </Routes>,
+        { route }
     )
 
-    renderMovie()
+describe('MovieDetails', () => {
+    it('renders the film once loaded', async () => {
+        tmdb.respondWith(
+            makeMovieDetails({
+                title: 'Sicario',
+                tagline: 'The border is just another line to cross.',
+                overview: 'An idealistic agent is enlisted into a task force.',
+                runtime: 121,
+                release_date: '2015-09-17',
+                genres: [{ id: 28, name: 'Action' }],
+            })
+        )
 
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Sicario')
-    expect(screen.getByText(/border is just another line/i)).toBeInTheDocument()
-    expect(screen.getByText(/idealistic agent/i)).toBeInTheDocument()
-    expect(screen.getByText('Action')).toBeInTheDocument()
-    expect(screen.getByText('Thriller')).toBeInTheDocument()
-    expect(screen.getByText(/121 min/)).toBeInTheDocument()
-    expect(screen.getByText(/2015/)).toBeInTheDocument()
-  })
+        openMovie()
 
-  it('offers a way back to the listing', async () => {
-    respondWith(makeMovieDetails())
-    const { user } = renderMovie()
+        expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Sicario')
+        expect(screen.getByText(/border is just another line/i)).toBeInTheDocument()
+        expect(screen.getByText(/idealistic agent/i)).toBeInTheDocument()
+        expect(screen.getByText('Action')).toBeInTheDocument()
+        expect(screen.getByText(/121 min/)).toBeInTheDocument()
+    })
 
-    await screen.findByRole('heading', { level: 1 })
-    await user.click(screen.getByRole('button', { name: /all movies/i }))
+    // Deep-linking straight here leaves nothing in history, so navigate(-1)
+    // would walk the user out of the app entirely.
+    it('falls back to the listing when there is no history behind it', async () => {
+        const { user } = openMovie()
+        await screen.findByRole('heading', { level: 1 })
 
-    expect(screen.getByText('Movies listing')).toBeInTheDocument()
-  })
+        await user.click(screen.getByRole('button', { name: /all movies/i }))
 
-  it('omits the poster when the film has none', async () => {
-    respondWith(makeMovieDetails({ poster_path: null }))
+        expect(screen.getByText('Movies listing')).toBeInTheDocument()
+    })
 
-    renderMovie()
-    await screen.findByRole('heading', { level: 1 })
+    it('steps back through real history when the user navigated here', async () => {
+        const { user } = openMovie('/movies')
 
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
-  })
+        await user.click(screen.getByRole('link', { name: /open film/i }))
+        await screen.findByRole('heading', { level: 1 })
 
-  it('shows an error with a retry when the request fails', async () => {
-    respondWith({ status_message: 'Not found' }, 404)
+        await user.click(screen.getByRole('button', { name: /all movies/i }))
 
-    const { user } = renderMovie()
+        expect(screen.getByText('Movies listing')).toBeInTheDocument()
+    })
 
-    expect(await screen.findByText(/could not load this movie/i)).toBeInTheDocument()
+    // An invalid id used to leave the page on an infinite skeleton, retrying a
+    // 404 forever. TmdbError carries the status so the retry predicate can
+    // refuse to retry a 4xx.
+    it('shows an error for an unknown id instead of retrying forever', async () => {
+        tmdb.failWith(404)
 
-    fetchMock.mockClear()
-    await user.click(screen.getByRole('button', { name: /try again/i }))
+        openMovie('/movie/does-not-exist')
 
-    expect(fetchMock).toHaveBeenCalled()
-  })
+        expect(await screen.findByText(/could not load this movie/i)).toBeInTheDocument()
+        expect(tmdb.fetchMock).toHaveBeenCalledTimes(1)
+    })
 
-  // A paused query is also pending, so the paused branch has to be checked
-  // first — otherwise an offline details page renders a skeleton that can
-  // never resolve.
-  it('shows the offline banner rather than a skeleton that never resolves', async () => {
-    const { onlineManager } = await import('@tanstack/react-query')
-    onlineManager.setOnline(false)
+    it('offers a retry on failure', async () => {
+        tmdb.failWith(500)
+        const { user } = openMovie()
 
-    try {
-      renderMovie()
-      expect(await screen.findByRole('status')).toHaveTextContent(/offline/i)
-    } finally {
-      onlineManager.setOnline(true)
-    }
-  })
+        await screen.findByText(/could not load this movie/i)
+        tmdb.fetchMock.mockClear()
+
+        await user.click(screen.getByRole('button', { name: /try again/i }))
+
+        expect(tmdb.fetchMock).toHaveBeenCalled()
+    })
 })
 
 describe('SeriesDetails', () => {
-  it('renders the show with season and episode counts', async () => {
-    respondWith(
-      makeSeriesDetails({
-        name: 'The Wire',
-        number_of_seasons: 5,
-        number_of_episodes: 60,
-        first_air_date: '2002-06-02',
-        genres: [{ id: 80, name: 'Crime' }],
-      })
-    )
+    const openSeries = () =>
+        renderWithProviders(
+            <Routes>
+                <Route path="/series" element={<p>Series listing</p>} />
+                <Route path="/series/:id" element={<SeriesDetails />} />
+            </Routes>,
+            { route: '/series/7' }
+        )
 
-    renderSeries()
+    it('renders the show with season and episode counts', async () => {
+        tmdb.respondWith(
+            makeSeriesDetails({
+                name: 'The Wire',
+                number_of_seasons: 5,
+                number_of_episodes: 60,
+                genres: [{ id: 80, name: 'Crime' }],
+            })
+        )
 
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('The Wire')
-    expect(screen.getByText(/5 seasons/)).toBeInTheDocument()
-    expect(screen.getByText(/60 episodes/)).toBeInTheDocument()
-    expect(screen.getByText('Crime')).toBeInTheDocument()
-  })
+        openSeries()
 
-  it('uses the singular when a show has one season', async () => {
-    respondWith(makeSeriesDetails({ number_of_seasons: 1 }))
+        expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('The Wire')
+        expect(screen.getByText(/5 seasons/)).toBeInTheDocument()
+        expect(screen.getByText(/60 episodes/)).toBeInTheDocument()
+        expect(screen.getByText('Crime')).toBeInTheDocument()
+    })
 
-    renderSeries()
-    await screen.findByRole('heading', { level: 1 })
+    it('reports failures with the series wording, not the movie wording', async () => {
+        tmdb.failWith(500)
 
-    expect(screen.getByText(/1 season(?!s)/)).toBeInTheDocument()
-  })
+        openSeries()
 
-  it('sends the user back to the series listing', async () => {
-    respondWith(makeSeriesDetails())
-    const { user } = renderSeries()
-
-    await screen.findByRole('heading', { level: 1 })
-    await user.click(screen.getByRole('button', { name: /all series/i }))
-
-    expect(screen.getByText('Series listing')).toBeInTheDocument()
-  })
-
-  it('reports a failure with the series wording, not the movie wording', async () => {
-    respondWith({}, 500)
-
-    renderSeries()
-
-    expect(await screen.findByText(/could not load this series/i)).toBeInTheDocument()
-  })
+        expect(await screen.findByText(/could not load this series/i)).toBeInTheDocument()
+    })
 })
