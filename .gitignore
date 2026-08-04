@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 
 coverage
+
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
