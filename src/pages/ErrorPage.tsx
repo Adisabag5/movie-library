@@ -1,8 +1,5 @@
 import { isRouteErrorResponse, Link, useRouteError } from 'react-router-dom';
 
-// Rendered as the router's errorElement, which puts it OUTSIDE RootLayout —
-// no header, no shared background. It has to paint the full page itself,
-// which is why it repeats the body colours rather than inheriting them.
 const ErrorPage = () => {
   const error = useRouteError();
 

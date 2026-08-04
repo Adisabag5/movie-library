@@ -9,14 +9,6 @@ const SeriesDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { data: series, isPending, isError, isPaused, refetch } = useSeriesDetails(id!);
 
-  if (isPaused) {
-    return <OfflineBanner />;
-  }
-
-  if (isPending) {
-    return <DetailsSkeleton />;
-  }
-
   if (isError) {
     return (
       <ErrorMessage
@@ -26,9 +18,16 @@ const SeriesDetails = () => {
     );
   }
 
+  if (isPending) {
+    return isPaused ? <OfflineBanner /> : <DetailsSkeleton />;
+  }
+
   return (
     <div className="animate-fade-up">
       <title>{`${series.name} — Movie Library`}</title>
+
+      {isPaused && <OfflineBanner />}
+
       <BackButton fallback="/series" label="All series" />
 
       <section className="flex flex-col gap-8 md:flex-row">

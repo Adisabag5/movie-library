@@ -34,8 +34,6 @@ describe('collecting a title', () => {
         expect(useCollection.getState().items).toHaveLength(0)
     })
 
-    // TMDB numbers movies and TV separately, so movie 42 and series 42 are
-    // unrelated titles. Anything keyed on the bare id would treat them as one.
     it('keeps a movie and a series with the same id apart', async () => {
         const movie = makeMovie({ id: 42, title: 'Same Id Movie' })
         const series = makeSeries({ id: 42, name: 'Same Id Series' })
@@ -73,9 +71,6 @@ describe('persistence', () => {
         expect(stored.state.items).toHaveLength(1)
     })
 
-    // migrate is not decorative: zustand DISCARDS persisted state whose
-    // version does not match, so shipping `version: 1` without it would have
-    // silently wiped every collection saved before versioning existed.
     it('keeps collections written before versioning existed', async () => {
         localStorage.setItem(
             STORAGE_KEY,

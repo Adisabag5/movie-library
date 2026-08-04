@@ -9,13 +9,7 @@ export interface FilterBarProps<Name extends string = string> {
     onChange: (name: Name, value: FilterValue) => void
     onReset?: () => void
     isBusy?: boolean
-    /**
-     * Set while a search is running. TMDB's /search endpoint ignores every
-     * discover parameter, so the controls are turned off rather than left
-     * looking usable while doing nothing.
-     */
     isDisabled?: boolean
-    /** Explains the disabled state instead of leaving it unexplained. */
     disabledHint?: string
 }
 

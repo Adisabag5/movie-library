@@ -4,9 +4,7 @@ import SearchIcon from '../../icons/SearchIcon'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 
 export interface SearchInputProps {
-    /** Committed value, owned by the URL via useSearchTerm. */
     value: string
-    /** Fires with the debounced text, not on every keystroke. */
     onChange: (value: string) => void
     label?: string
     placeholder?: string
@@ -14,14 +12,6 @@ export interface SearchInputProps {
     delay?: number
 }
 
-/**
- * Deliberately NOT a purely controlled input.
- *
- * `draft` is what is being typed and updates on every keystroke, so the field
- * stays responsive. `value` is what the URL has committed. Routing every
- * keystroke out through setSearchParams and back would make typing laggy and
- * can jump the caret, so the two are kept apart and reconciled on a delay.
- */
 const SearchInput = ({
     value,
     onChange,
@@ -34,17 +24,11 @@ const SearchInput = ({
     const inputId = useId()
     const debounced = useDebouncedValue(draft, delay)
 
-    // onChange is a fresh function every render, so it is held in a ref rather
-    // than listed as a dependency — otherwise the effect below would re-run
-    // continuously instead of only when the debounced text settles.
     const latestOnChange = useRef(onChange)
     useEffect(() => {
         latestOnChange.current = onChange
     })
 
-    // What we last pushed out. It lets the value coming back down be
-    // recognised as our own echo, so a commit does not bounce back and
-    // overwrite newer keystrokes.
     const committed = useRef(value)
 
     const commit = (next: string) => {
@@ -57,17 +41,12 @@ const SearchInput = ({
         commit(debounced)
     }, [debounced])
 
-    // Re-seed when the value changes for a reason other than our own commit —
-    // a back-navigation, or the page clearing filters. Without this the box
-    // keeps showing text the URL no longer has.
     useEffect(() => {
         if (value === committed.current) return
         committed.current = value
         setDraft(value)
     }, [value])
 
-    // Clearing and Enter both bypass the delay: waiting 350ms to empty a box
-    // the user just emptied feels broken.
     const clear = () => {
         setDraft('')
         commit('')

@@ -98,8 +98,8 @@ Before this, an invalid id left the page on an **infinite skeleton**, retrying a
 
 `fetchFromTmdb` casts the parsed JSON to the caller's type; nothing validates it at runtime. Rather
 than hide that behind `any`, the response goes through `unknown` and the assertion is written out
-explicitly, with a comment naming it as the one place the app trusts the API. An honest boundary
-beats an invisible one.
+explicitly — one visible `as T` at a single boundary, instead of `any` leaking through the whole
+data layer. An honest boundary beats an invisible one.
 
 ---
 
@@ -207,7 +207,12 @@ handles the position problem SPAs otherwise ignore.
 
 ## Testing
 
-**80 tests across 14 files** — 68% statements, 61% branches.
+**44 tests across 5 files** — 84% statements, 81% branches.
+
+The suite is deliberately integration-first and deliberately small. An earlier unit-heavy version
+reached 156 tests and covered *less*: pages now drive the real query and HTTP layers with only
+`fetch` faked, and the assertions are made on the **request URL** — the seam where both the
+endpoint bug and the genre-encoding bug actually lived. A third of the tests, and coverage went up.
 
 Tests target bugs the project actually had, so they are regressions rather than coverage padding:
 `mediaKey` namespacing, the placeholder image that used to render `<img src="">`, query-string
@@ -290,7 +295,7 @@ twice. Production fetches once.
 | Asset | Raw | Gzipped |
 |---|---|---|
 | Main bundle | 367 kB | **127 kB** |
-| CSS | 43 kB | 7.6 kB |
+| CSS | 42 kB | 7.4 kB |
 | Route chunks | 0.3 – 11 kB | under 4 kB |
 
 Route-level splitting keeps each page under a few kB; the weight is React, React Router and
@@ -317,5 +322,7 @@ Stated plainly, because pretending they don't exist is worse than the limitation
   it hasn't been added.
 - **Search and filters can't combine** — a TMDB constraint, not a design choice.
 - **No SSR**, so first paint waits on the JS bundle.
-- **Coverage is 68%.** The filter system and the debounce hook are the largest untested surfaces.
+- **Coverage is 84%.** What is left is mostly unreachable from a test render — the router shell
+  (`App`, `router`, `RootLayout`) and static presentational pieces — plus `useInView` at 38%,
+  because jsdom has no `IntersectionObserver` to exercise.
 - Genre lists are hardcoded rather than fetched. They're stable, but the API is the source of truth.

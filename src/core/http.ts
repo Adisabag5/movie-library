@@ -12,7 +12,6 @@ const HEADERS = {
   Authorization: `Bearer ${API_KEY}`,
 };
 
-/** Appends a filter query only when there is one, so no trailing '&'. */
 const suffix = (query: string) => (query ? `&${query}` : '');
 
 export class TmdbError extends Error {
@@ -47,11 +46,6 @@ export function fetchPopularMovies(
   return fetchFromTmdb(`/movie/popular?language=en-US&page=${page}`, signal);
 }
 
-// /movie/popular and /tv/popular are fixed curated lists: they accept only
-// language, page and region, and silently DISCARD anything else. Filtering has
-// to go through /discover, which is a different endpoint with a different
-// result set — passing with_genres to /popular returns the unfiltered list
-// with no error at all.
 export function fetchDiscoverMovies(
   page: number,
   query: string,
@@ -68,11 +62,6 @@ export function fetchDiscoverSeries(
   return fetchFromTmdb(`/discover/tv?language=en-US&page=${page}${suffix(query)}`, signal);
 }
 
-// /search takes a text query but ignores every /discover filter, and
-// /discover ignores `query`. There is no endpoint that does both, which is why
-// searching and filtering are mutually exclusive modes rather than combinable.
-// The term is encoded because it is arbitrary user input — spaces, ampersands
-// and question marks would otherwise corrupt the query string.
 export function fetchSearchMovies(
   page: number,
   term: string,

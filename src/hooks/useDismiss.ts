@@ -1,13 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-/**
- * Dismisses an open popover on an outside pointer press or Escape, and
- * returns the ref marking what counts as "inside".
- *
- * The callback is held in a ref so the listeners are bound once per open
- * rather than on every render — otherwise an inline arrow from the caller
- * would tear down and re-attach both listeners continuously.
- */
 export function useDismiss<T extends HTMLElement>(open: boolean, onDismiss: () => void) {
   const ref = useRef<T>(null)
   const dismiss = useRef(onDismiss)

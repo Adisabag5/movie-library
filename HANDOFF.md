@@ -14,7 +14,7 @@ Feature-complete for its scope: browse, filter, search, details, persistent coll
 | | |
 |---|---|
 | Source | ~2,500 lines across `src/` |
-| Tests | 80 passing, 14 files, 68% statements |
+| Tests | 44 passing, 5 files, 84% statements |
 | Bundle | 127 kB gzipped |
 | Health | `tsc -b`, `eslint`, `vitest`, `vite build` all clean |
 
@@ -48,9 +48,9 @@ These are load-bearing. Each replaced a real bug; breaking one reintroduces it.
 - No runtime validation of API responses (types are asserted, not verified)
 - Search and filters can't combine — a TMDB limitation, handled explicitly in the UI
 - No SSR; first paint waits on the bundle
-- Filter system and debounce hook are the largest untested surfaces
 - Genre lists hardcoded rather than fetched
-- `src/core/util.ts` is a slightly generic name for what are filter-value helpers
+- The 16% not covered is mostly router-only shell and static presentational pieces, plus
+  `useInView` — jsdom has no `IntersectionObserver`
 
 ---
 
@@ -181,7 +181,7 @@ Record at 1280×800 on the **production preview**, light theme.
 5. **Mobile still** — 390×844, Movies page with filters wrapped
 6. **Code still** — `queries.ts` or `core/discoverParams.ts`
 
-Suggested caption: *"React 19 · TanStack Query · URL-driven state · 80 tests"*
+Suggested caption: *"React 19 · TanStack Query · URL-driven state · 44 tests, 84% covered"*
 
 ---
 
@@ -214,11 +214,9 @@ Three things that will bite:
 
 Highest value first:
 
-1. **Tests for the filter system.** `FilterBar.test.tsx` and `useFilterParams.test.tsx` hold 20
-   `it.todo` entries written as a spec — implement against them.
-2. **Zod at the fetch boundary.** The one architectural gap that's honestly acknowledged.
-3. **Collections filtering.** The `FilterBar` is already decoupled from TMDB; Collections would
+1. **Zod at the fetch boundary.** The one architectural gap that's honestly acknowledged.
+2. **Collections filtering.** The `FilterBar` is already decoupled from TMDB; Collections would
    filter a local array and prove the component is genuinely reusable.
-4. **Performance**, if it ever matters: `preconnect` to both TMDB origins and a static shell in
+3. **Performance**, if it ever matters: `preconnect` to both TMDB origins and a static shell in
    `index.html` are the two cheapest wins by a wide margin. Investigated and deliberately deferred
    — the app is fast enough on a normal connection.

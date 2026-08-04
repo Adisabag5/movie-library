@@ -13,11 +13,6 @@ import {
     stubTmdb,
 } from '../test/utils'
 
-// The browse pages are where filters, search, pagination and the endpoint
-// switch all meet, so this suite drives the real query layer with only fetch
-// faked. Asserting on the request URL is the point: that is the seam where
-// filters silently stopped working before.
-
 let tmdb: ReturnType<typeof stubTmdb>
 
 beforeEach(() => {
@@ -82,8 +77,6 @@ describe('Movies — listing', () => {
 })
 
 describe('Movies — pagination', () => {
-    // Under keepPreviousData the grid can still be showing the previous page,
-    // so the label has to describe the data on screen, not the URL.
     it('labels the pager from the data on screen, not the URL', async () => {
         tmdb.respondWith(makePage([makeMovie()], { page: 4, total_pages: 20 }))
         openMovies('/movies?page=9')
@@ -91,7 +84,6 @@ describe('Movies — pagination', () => {
         expect(await screen.findByText('Page 4 of 20')).toBeInTheDocument()
     })
 
-    // TMDB rejects anything past 500 even when total_pages says otherwise.
     it('caps the pager at the TMDB maximum', async () => {
         tmdb.respondWith(makePage([makeMovie()], { page: 1, total_pages: 4000 }))
         openMovies()
@@ -141,8 +133,6 @@ describe('Movies — filters', () => {
         expect(screen.getByRole('button', { name: 'Rating' })).toHaveTextContent('8+ Great')
     })
 
-    // A checkbox list reads as "any of these"; a comma would mean AND and make
-    // every extra tick shrink the results.
     it('OR-joins several genres rather than AND-joining them', async () => {
         const { user } = openMovies('/movies?genre=27')
         await screen.findByRole('link', { name: /sicario/i })
@@ -160,8 +150,6 @@ describe('Movies — filters', () => {
         expect(tmdb.lastUrl()).toContain('primary_release_year=2020')
     })
 
-    // Filtering to two pages while the URL still says page 7 asks for a page
-    // that does not exist and renders an empty grid.
     it('resets the page when a filter changes', async () => {
         const { user } = openMovies('/movies?page=7')
         await screen.findByRole('link', { name: /sicario/i })
@@ -183,7 +171,6 @@ describe('Movies — filters', () => {
 })
 
 describe('Movies — search', () => {
-    // Typing must not fire a request per keystroke.
     it('debounces typing into a single /search request', async () => {
         const { user } = openMovies()
         await screen.findByRole('link', { name: /sicario/i })
@@ -196,8 +183,6 @@ describe('Movies — search', () => {
         expect(tmdb.lastUrl()).toContain('query=batman')
     })
 
-    // TMDB cannot honour a text query and discover filters in one request, so
-    // the filters are turned off and the reason is stated.
     it('disables the filters while searching and explains why', async () => {
         openMovies('/movies?q=batman')
 
@@ -244,8 +229,6 @@ describe('Series', () => {
         expect(tmdb.lastUrl()).toContain('/tv/popular')
     })
 
-    // Movie and TV genre ids are different namespaces — sending 28 (movie
-    // Action) to /discover/tv returns nothing at all.
     it('offers TV genre ids, not movie ones', async () => {
         const { user } = openSeries()
         await screen.findByRole('link', { name: /the wire/i })

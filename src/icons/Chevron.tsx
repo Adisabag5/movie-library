@@ -1,6 +1,5 @@
 import type { SVGProps } from 'react'
 
-/** Pure mark. Positioning and rotation belong to whoever renders it. */
 const Chevron = (props: SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" {...props}>
     <path

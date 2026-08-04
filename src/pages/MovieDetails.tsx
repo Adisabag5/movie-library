@@ -9,14 +9,6 @@ const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { data: movie, isPending, isError, isPaused, refetch } = useMovieDetails(id!);
 
-  if (isPaused) {
-    return <OfflineBanner />;
-  }
-
-  if (isPending) {
-    return <DetailsSkeleton />;
-  }
-
   if (isError) {
     return (
       <ErrorMessage
@@ -26,12 +18,16 @@ const MovieDetails = () => {
     );
   }
 
+  if (isPending) {
+    return isPaused ? <OfflineBanner /> : <DetailsSkeleton />;
+  }
+
   return (
     <div className="animate-fade-up">
-      {/* Rendered here, not at the top of the component: the name is only
-          known once the request resolves. Until then the previous title
-          stays, which beats a flash of "undefined" in the tab. */}
       <title>{`${movie.title} — Movie Library`}</title>
+
+      {isPaused && <OfflineBanner />}
+
       <BackButton fallback="/movies" label="All movies" />
 
       <section className="flex flex-col gap-8 md:flex-row">

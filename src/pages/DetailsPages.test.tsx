@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react'
+import { onlineManager } from '@tanstack/react-query'
+import { screen, waitFor } from '@testing-library/react'
 import { Link, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import MovieDetails from './MovieDetails'
@@ -17,6 +18,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+    onlineManager.setOnline(true)
     vi.unstubAllGlobals()
 })
 
@@ -59,8 +61,6 @@ describe('MovieDetails', () => {
         expect(screen.getByText(/121 min/)).toBeInTheDocument()
     })
 
-    // Deep-linking straight here leaves nothing in history, so navigate(-1)
-    // would walk the user out of the app entirely.
     it('falls back to the listing when there is no history behind it', async () => {
         const { user } = openMovie()
         await screen.findByRole('heading', { level: 1 })
@@ -81,9 +81,6 @@ describe('MovieDetails', () => {
         expect(screen.getByText('Movies listing')).toBeInTheDocument()
     })
 
-    // An invalid id used to leave the page on an infinite skeleton, retrying a
-    // 404 forever. TmdbError carries the status so the retry predicate can
-    // refuse to retry a 4xx.
     it('shows an error for an unknown id instead of retrying forever', async () => {
         tmdb.failWith(404)
 
@@ -91,6 +88,19 @@ describe('MovieDetails', () => {
 
         expect(await screen.findByText(/could not load this movie/i)).toBeInTheDocument()
         expect(tmdb.fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('banners an offline pause above the film rather than instead of it', async () => {
+        tmdb.respondWith(makeMovieDetails({ title: 'Sicario' }))
+        const { queryClient } = openMovie()
+
+        expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Sicario')
+
+        onlineManager.setOnline(false)
+        void queryClient.invalidateQueries()
+
+        await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(/offline/i))
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sicario')
     })
 
     it('offers a retry on failure', async () => {

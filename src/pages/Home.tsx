@@ -14,28 +14,16 @@ const Home = () => {
   const popularMovies = usePopularMovies();
   const topRatedMovies = useTopRatedMovies();
   const popularSeries = usePopularSeries();
-
-  // Being offline is a property of the page, not of each row — so it is
-  // announced once, ABOVE the content, and never instead of it. Whatever any
-  // row already has stays on screen.
-  const isPaused =
-    popularMovies.isPaused || topRatedMovies.isPaused || popularSeries.isPaused;
+  const isPaused = popularMovies.isPaused || topRatedMovies.isPaused || popularSeries.isPaused;
 
   return (
     <div className="space-y-10">
       <title>Movie Library — Browse films and series</title>
 
-      {/* Visually hidden, not absent. The hero is the visual focus, so a large
-          "Movie Library" heading would fight the design — but without an h1 the
-          landing page has no top-level label in the accessibility tree, and its
-          headings start at h2. sr-only keeps the outline intact. */}
       <h1 className="sr-only">Movie Library — browse popular films and series</h1>
 
       {isPaused && <OfflineBanner />}
 
-      {/* Each section resolves on its own. There is deliberately no aggregate
-          isPending/isError/isPaused across the three queries: one slow or
-          failing request must not blank the other two. */}
       <QueryState
         query={popularMovies}
         skeleton={<HeroSkeleton />}

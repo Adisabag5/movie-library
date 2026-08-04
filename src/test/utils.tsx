@@ -10,11 +10,6 @@ import type { Paginated } from '../types/api'
 
 export const currentUrl = () => decodeURIComponent(screen.getByTestId('url').textContent ?? '')
 
-/**
- * Replaces fetch and records what the app asked TMDB for. Asserting on the
- * request URL is what proves the filter/search plumbing end to end — it is the
- * layer where the endpoint bug and the genre-encoding bug both lived.
- */
 export function stubTmdb(body: unknown = null) {
   let responseBody = body
   let status = 200

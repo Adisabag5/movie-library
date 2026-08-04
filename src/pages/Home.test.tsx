@@ -4,8 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Home from './Home'
 import { makeMovie, makePage, makeSeries, renderWithProviders } from '../test/utils'
 
-// Drives the whole stack — hooks/queries.ts and core/http.ts included — with
-// only the network faked.
 const popular = makePage([makeMovie({ id: 1, title: 'Heat' })])
 const topRated = makePage([makeMovie({ id: 2, title: 'Casablanca' })])
 const series = makePage([makeSeries({ id: 3, name: 'The Wire' })])
@@ -46,8 +44,6 @@ describe('Home', () => {
         expect(screen.getByRole('link', { name: /casablanca/i })).toBeInTheDocument()
     })
 
-    // The whole point of resolving each section independently: one bad
-    // endpoint must not blank the landing page.
     it('keeps the healthy rows when one query fails', async () => {
         outcomes['/tv/popular'] = { ok: false, status: 500 }
 
@@ -58,7 +54,6 @@ describe('Home', () => {
         expect(screen.getByRole('link', { name: /casablanca/i })).toBeInTheDocument()
     })
 
-    // Home used to be the only page where a failed section was a dead end.
     it('offers a retry on the row that failed', async () => {
         outcomes['/tv/popular'] = { ok: false, status: 500 }
 
@@ -71,8 +66,6 @@ describe('Home', () => {
         expect(fetchMock).toHaveBeenCalled()
     })
 
-    // Being offline is a page-level fact: one banner, above the content, never
-    // instead of it — and never four of them.
     it('announces an offline pause once', async () => {
         onlineManager.setOnline(false)
         try {
@@ -83,8 +76,6 @@ describe('Home', () => {
         }
     })
 
-    // queryOptions() factories are what make Home and the browse pages share
-    // one cache entry per URL.
     it('requests each endpoint exactly once', async () => {
         renderWithProviders(<Home />)
         await screen.findByRole('link', { name: /casablanca/i })

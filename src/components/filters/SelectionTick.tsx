@@ -2,7 +2,6 @@ import CheckIcon from '../../icons/CheckIcon'
 
 interface SelectionTickProps {
     checked: boolean
-    /** Round reads as "one of these"; square reads as "any of these". */
     round: boolean
 }
 

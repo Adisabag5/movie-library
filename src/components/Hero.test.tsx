@@ -25,9 +25,6 @@ describe('Hero', () => {
         expect(screen.getByRole('link', { name: /details/i })).toHaveAttribute('href', '/movie/2')
     })
 
-    // Keying the backdrop on the movie id remounts the <img>, which leaves an
-    // empty element for a frame and flashes the panel background through the
-    // switch. Swapping only src keeps the previous frame painted.
     it('swaps the backdrop without replacing the element', async () => {
         const { container, user } = renderWithProviders(<Hero movies={movies} />)
         const before = container.querySelector('section > img')
@@ -37,8 +34,6 @@ describe('Hero', () => {
         expect(container.querySelector('section > img')).toBe(before)
     })
 
-    // Home hands Hero whatever the query returned; an empty list must not
-    // crash on movies[0].
     it('renders nothing rather than crashing on an empty list', () => {
         const { container } = renderWithProviders(<Hero movies={[]} />)
 

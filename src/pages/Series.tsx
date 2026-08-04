@@ -27,7 +27,6 @@ const Series = () => {
     term
   );
 
-
   if (isError) {
     return (
       <ErrorMessage

@@ -19,8 +19,6 @@ const Movies = () => {
   const { values, setFilter, reset } = useFilterParams({ fields });
   const { term, setTerm } = useSearchTerm();
 
-  // Searching and filtering are mutually exclusive on TMDB, so the filter
-  // query is dropped while a term is present rather than sent and ignored.
   const isSearching = term !== '';
 
   const { data, isPending, isError, isPaused, isPlaceholderData, refetch } = useMoviesPage(
@@ -28,7 +26,6 @@ const Movies = () => {
     isSearching ? '' : toDiscoverQuery(values, 'movie'),
     term
   );
-
 
   if (isError) {
     return (
@@ -58,7 +55,6 @@ const Movies = () => {
           disabledHint="Filters are unavailable while searching"
         />
       </div>
-
 
       {isPaused && <OfflineBanner />}
 

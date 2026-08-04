@@ -2,12 +2,6 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi } from 'vitest'
 
-// Node 25 defines its own file-backed `localStorage` global. It wins over
-// jsdom's, and without --localstorage-file it is an inert plain object with
-// no getItem/setItem/clear at all. Anything touching storage — these tests,
-// or zustand's persist middleware inside the app — gets a broken stub.
-// Install a real in-memory Storage on both window and globalThis so the two
-// agree and behave like a browser.
 class MemoryStorage implements Storage {
   #entries = new Map<string, string>()
 
@@ -46,8 +40,6 @@ for (const target of [globalThis, window]) {
   })
 }
 
-// jsdom does not implement scrollTo, and usePageParam calls it on every page
-// change. Without this the pagination tests fail on an unimplemented method.
 Object.defineProperty(window, 'scrollTo', {
   value: vi.fn(),
   configurable: true,

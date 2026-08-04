@@ -5,18 +5,10 @@ interface FilterOptionRowProps {
     option: FilterOption
     checked: boolean
     multiple: boolean
-    /** Ties the radios of one field together. Unused when multiple. */
     groupName?: string
     onSelect: () => void
 }
 
-/**
- * The native input stays in the DOM but is visually hidden: it carries the
- * semantics, keyboard behaviour and focus, while the sibling span does the
- * drawing. Checked state is driven from React rather than a peer-checked
- * variant, because the tick is a *descendant* of that sibling and CSS sibling
- * combinators cannot reach it.
- */
 const FilterOptionRow = ({
     option,
     checked,

@@ -66,10 +66,6 @@ const seriesDetailsQuery = (id: string) =>
     queryFn: ({ signal }) => fetchSeriesDetails(id, signal),
   });
 
-// Three endpoints, one hook. Search wins when a term is present, because TMDB
-// cannot honour filters and a text query in the same request. With neither, it
-// stays on /popular, which keeps the curated ordering and keeps sharing Home's
-// cache entry.
 export function useMoviesPage(page: number, filterQuery = '', searchTerm = '') {
   const options = searchTerm
     ? searchMoviesQuery(page, searchTerm)

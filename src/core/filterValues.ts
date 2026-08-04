@@ -15,11 +15,6 @@ export const toggleValue = (current: string[], value: string) =>
     ? current.filter((entry) => entry !== value)
     : [...current, value]
 
-/**
- * Lower-cases only a plain single capitalised word, so "Rating" reads as
- * "Any rating" while an acronym or multi-word label survives intact — a field
- * called "IMDb Score" would otherwise become "Any imdb score".
- */
 export const emptyLabelFor = (field: FilterField) =>
   field.emptyLabel ??
   `Any ${/^[A-Z][a-z]+$/.test(field.label) ? field.label.toLowerCase() : field.label}`

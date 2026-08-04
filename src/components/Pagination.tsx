@@ -8,8 +8,6 @@ interface PaginationProps {
     onPageChange: (page: number) => void;
 }
 
-// Icon-only, so the accessible name has to come from aria-label — without it
-// these are two unlabelled buttons to a screen reader.
 const buttonClass =
     'flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-all duration-200 hover:-translate-y-0.5 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:opacity-30'
 
